@@ -1,0 +1,17 @@
+syntax = "proto3";
+package block;
+option go_package = "github.com/blackhorseya/portto/pkg/entity/domain/block/model";
+
+import "google/protobuf/timestamp.proto";
+
+message BlockRecord {
+  // @gotags: json:"block_num"
+  uint64 height = 1;
+  // @gotags: json:"block_hash"
+  string hash = 2;
+  string parent_hash = 3;
+  // @gotags: json:"transactions"
+  repeated string transaction_ids = 4;
+  // @gotags: json:"block_time"
+  google.protobuf.Timestamp timestamp = 5;
+}

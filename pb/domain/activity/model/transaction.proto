@@ -1,0 +1,20 @@
+syntax = "proto3";
+package activity;
+option go_package = "github.com/blackhorseya/portto/pkg/entity/domain/activity/model";
+
+message Event {
+  uint64 index = 1;
+  string data = 2;
+}
+
+message Transaction {
+  // @gotags: json:"tx_hash"
+  string hash = 1;
+  string from = 2;
+  string to = 3;
+  int64 nonce = 4;
+  string data = 5;
+  string value = 6;
+  // @gotags: json:"logs"
+  repeated Event events = 7;
+}
