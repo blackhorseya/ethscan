@@ -12,6 +12,8 @@ IMAGE_NAME=$(REGISTRY)/$(PROJECT_ID)/$(APP_NAME)
 VERSION=latest
 DEPLOY_TO=uat
 
+DB_URI='mysql://root:changeme@tcp(localhost:3306)/$(PROJECT_NAME)_$(SVC_NAME)?charset=utf8mb4&parseTime=True&loc=Local'
+
 .PHONY: check-%
 check-%: ## check environment variable is exists
 	@if [ -z '${${*}}' ]; then echo 'Environment variable $* not set' && exit 1; fi
@@ -99,3 +101,11 @@ update-package: ## update package and commit
 	@go mod tidy
 	@git add go.mod go.sum
 	@git commit -m "build: update package"
+
+.PHONY: migrate-up
+migrate-up: ## run migration up
+	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations up
+
+.PHONY: migrate-down
+migrate-down: ## run migration down
+	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations down
