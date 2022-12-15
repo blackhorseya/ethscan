@@ -1,9 +1,16 @@
 PROJECT_NAME=portto
 SVC_NAME=
 SVC_ADAPTER=
+
 APP_NAME=$(PROJECT_NAME)-$(SVC_NAME)-$(SVC_ADAPTER)
-MAIN_FOLDER='./cmd/$(SVC_ADAPTER)/$(SVC_NAME)'
+MAIN_FOLDER=./cmd/$(SVC_ADAPTER)/$(SVC_NAME)
+
+REGISTRY=gcr.io
+PROJECT_ID=sean-side
+IMAGE_NAME=$(REGISTRY)/$(PROJECT_ID)/$(APP_NAME)
+
 VERSION=latest
+DEPLOY_TO=uat
 
 .PHONY: check-%
 check-%: ## check environment variable is exists
@@ -36,15 +43,14 @@ test-e2e: ## execute e2e test
 	@cd ./test/e2e && npx playwright test ./tests
 
 .PHONY: build-image
-build-image: check-SVC_NAME check-SVC_ADAPTER check-VERSION check-GITHUB_TOKEN ## build docker image with APP_NAME and VERSION
-	@docker build -t $(REGISTRY)/$(APP_NAME):$(VERSION) \
+build-image: check-SVC_NAME check-SVC_ADAPTER check-VERSION ## build docker image with APP_NAME and VERSION
+	@docker build -t $(IMAGE_NAME):$(VERSION) \
 	--label "app.name=$(APP_NAME)" \
 	--label "app.version=$(VERSION)" \
 	--build-arg MAIN_FOLDER=$(MAIN_FOLDER) \
-	--build-arg GITHUB_TOKEN=$(GITHUB_TOKEN) \
 	--platform linux/amd64 \
 	--pull --cache-from=$(REGISTRY)/$(APP_NAME) \
-	-f Dockerfile .
+	-f ./deployments/Dockerfile .
 
 .PHONY: list-images
 list-images: check-SVC_NAME check-SVC_ADAPTER ## list all images
@@ -56,7 +62,7 @@ prune-images: check-SVC_NAME check-SVC_ADAPTER ## remove all images
 
 .PHONY: push-image
 push-image: check-SVC_NAME check-SVC_ADAPTER check-VERSION ## push image to registry
-	@docker push $(REGISTRY)/$(APP_NAME):$(VERSION)
+	@docker push $(IMAGE_NAME):$(VERSION)
 
 .PHONY: gen
 gen: gen-pb gen-wire gen-mocks gen-swagger ## generate all generate commands
