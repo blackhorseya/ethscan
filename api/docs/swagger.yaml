@@ -1,0 +1,14 @@
+basePath: /api
+info:
+  contact:
+    email: blackhorseya@gmail.com
+    name: sean.zheng
+    url: https://blog.seancheng.space
+  description: API for Portto
+  license:
+    name: GPL-3.0
+    url: https://spdx.org/licenses/GPL-3.0-only.html
+  title: Portto API
+  version: 0.0.1
+paths: {}
+swagger: "2.0"
