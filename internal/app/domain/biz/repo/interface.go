@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/blackhorseya/portto/pkg/contextx"
 	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
+	"github.com/google/wire"
 )
 
 // IRepo declare block repository interface
@@ -24,3 +25,5 @@ type IRepo interface {
 	// UpdateRecord serve caller to given block record to update
 	UpdateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 }
+
+var ProviderSet = wire.NewSet(NewNodeOptions, NewImpl)
