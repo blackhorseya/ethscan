@@ -10,4 +10,3 @@ db:
 
 node:
   baseURL: "<BASE_URL>"
-  apiKey: "<API_KEY>"
