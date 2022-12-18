@@ -336,4 +336,4 @@ $RECYCLE.BIN/
 coverage.txt
 bin
 profile.out
-configs/**/local.yaml
+/configs/**/local.yaml
