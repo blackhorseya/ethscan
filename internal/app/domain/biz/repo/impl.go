@@ -3,13 +3,12 @@ package repo
 import (
 	"github.com/blackhorseya/portto/pkg/contextx"
 	"github.com/blackhorseya/portto/pkg/entity/domain/block/model"
-	"github.com/blackhorseya/portto/pkg/httpx"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 )
 
 type NodeOptions struct {
-	ApiKey  string `json:"api_key" yaml:"apiKey"`
 	BaseURL string `json:"base_url" yaml:"baseURL"`
 }
 
@@ -25,22 +24,31 @@ func NewNodeOptions(v *viper.Viper) (*NodeOptions, error) {
 }
 
 type impl struct {
-	opts       *NodeOptions
-	rw         *sqlx.DB
-	httpclient httpx.Client
+	opts *NodeOptions
+	rw   *sqlx.DB
+	eth  *ethclient.Client
 }
 
-func NewImpl(opts *NodeOptions, rw *sqlx.DB, httpclient httpx.Client) IRepo {
-	return &impl{
-		opts:       opts,
-		rw:         rw,
-		httpclient: httpclient,
+func NewImpl(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
+	client, err := ethclient.Dial(opts.BaseURL)
+	if err != nil {
+		return nil, err
 	}
+
+	return &impl{
+		opts: opts,
+		rw:   rw,
+		eth:  client,
+	}, nil
 }
 
 func (i *impl) FetchCurrentHeight(ctx contextx.Contextx) (height uint64, err error) {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
+	ret, err := i.eth.BlockNumber(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return ret, nil
 }
 
 func (i *impl) FetchRecordByHeight(ctx contextx.Contextx, height uint64) (record *model.BlockRecord, err error) {
