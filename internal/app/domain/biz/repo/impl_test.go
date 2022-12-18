@@ -2,6 +2,7 @@ package repo
 
 import (
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
@@ -22,7 +23,7 @@ func (s *suiteTester) SetupTest() {
 	db, rw, _ := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	s.rw = rw
 
-	opts := &NodeOptions{BaseURL: "http://localhost"}
+	opts := &NodeOptions{BaseURL: "http://localhost", Timeout: 5 * time.Second}
 	s.repo, _ = CreateRepo(opts, sqlx.NewDb(db, "mysql"))
 }
 
