@@ -34,17 +34,20 @@ type impl struct {
 	opts   *Options
 	logger *zap.Logger
 
+	initHeight uint64
+
 	taskC chan time.Time
 	done  chan bool
 }
 
 // NewCronjob create a cronjob instance
-func NewCronjob(opts *Options, logger *zap.Logger) adapters.Cronjob {
+func NewCronjob(opts *Options, logger *zap.Logger, initHeight uint64) adapters.Cronjob {
 	return &impl{
-		opts:   opts,
-		logger: logger,
-		taskC:  make(chan time.Time, 1),
-		done:   make(chan bool),
+		opts:       opts,
+		logger:     logger,
+		initHeight: initHeight,
+		taskC:      make(chan time.Time, 1),
+		done:       make(chan bool),
 	}
 }
 

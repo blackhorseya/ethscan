@@ -6,6 +6,7 @@ package main
 import (
 	"github.com/blackhorseya/portto/internal/pkg/config"
 	"github.com/blackhorseya/portto/internal/pkg/log"
+	"github.com/blackhorseya/portto/internal/pkg/storage/mariadb"
 	"github.com/google/wire"
 )
 
@@ -15,6 +16,7 @@ var providerSet = wire.NewSet(
 	log.ProviderSet,
 
 	// storage
+	mariadb.ProviderSet,
 
 	// transports
 
