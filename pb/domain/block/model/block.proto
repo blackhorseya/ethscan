@@ -4,6 +4,13 @@ option go_package = "github.com/blackhorseya/portto/pkg/entity/domain/block/mode
 
 import "google/protobuf/timestamp.proto";
 
+enum BlockStatus {
+  BLOCK_STATUS_UNSPECIFIED = 0;
+  BLOCK_STATUS_STABLE = 1;
+  BLOCK_STATUS_UNSTABLE = 2;
+  BLOCK_STATUS_REORG = 3;
+}
+
 message BlockRecord {
   // @gotags: json:"block_num"
   uint64 height = 1;
@@ -14,4 +21,6 @@ message BlockRecord {
   repeated string transaction_ids = 4;
   // @gotags: json:"block_time"
   google.protobuf.Timestamp timestamp = 5;
+  int64 depth = 6;
+  BlockStatus status = 7;
 }
