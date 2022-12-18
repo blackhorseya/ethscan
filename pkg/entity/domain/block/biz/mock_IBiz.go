@@ -60,6 +60,36 @@ func (_m *MockIBiz) List(ctx contextx.Contextx, cond ListCondition) ([]*model.Bl
 	return r0, r1
 }
 
+// ScanByHeight provides a mock function with given fields: ctx, height
+func (_m *MockIBiz) ScanByHeight(ctx contextx.Contextx, height uint64) (*model.BlockRecord, bool, error) {
+	ret := _m.Called(ctx, height)
+
+	var r0 *model.BlockRecord
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, uint64) *model.BlockRecord); ok {
+		r0 = rf(ctx, height)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.BlockRecord)
+		}
+	}
+
+	var r1 bool
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, uint64) bool); ok {
+		r1 = rf(ctx, height)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(contextx.Contextx, uint64) error); ok {
+		r2 = rf(ctx, height)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 type mockConstructorTestingTNewMockIBiz interface {
 	mock.TestingT
 	Cleanup(func())
