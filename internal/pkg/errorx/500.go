@@ -30,6 +30,9 @@ var (
 var (
 	// ErrGetRecord means failed to get block record
 	ErrGetRecord = er.New(http.StatusInternalServerError, 50050, _errDatabase, "failed to get block record")
+
+	// ErrCountRecord means failed to count block record
+	ErrCountRecord = er.New(http.StatusInternalServerError, 50051, _errDatabase, "failed to count block record")
 )
 
 

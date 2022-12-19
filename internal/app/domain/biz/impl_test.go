@@ -150,3 +150,84 @@ func (s *suiteTester) Test_impl_ScanByHeight() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_List() {
+	type args struct {
+		cond bb.ListCondition
+		mock func()
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantRecords []*bm.BlockRecord
+		wantTotal   int
+		wantErr     bool
+	}{
+		{
+			name:        "invalid page",
+			args:        args{cond: bb.ListCondition{Page: -1, Size: 10}},
+			wantRecords: nil,
+			wantTotal:   0,
+			wantErr:     true,
+		},
+		{
+			name:        "invalid size",
+			args:        args{cond: bb.ListCondition{Page: 1, Size: -1}},
+			wantRecords: nil,
+			wantTotal:   0,
+			wantErr:     true,
+		},
+		{
+			name: "list then error",
+			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
+				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, errors.New("error")).Once()
+			}},
+			wantRecords: nil,
+			wantTotal:   0,
+			wantErr:     true,
+		},
+		{
+			name: "count then error",
+			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
+				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
+
+				s.repo.On("CountRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(0, errors.New("error")).Once()
+			}},
+			wantRecords: nil,
+			wantTotal:   0,
+			wantErr:     true,
+		},
+		{
+			name: "ok",
+			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
+				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
+
+				s.repo.On("CountRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(10, nil).Once()
+			}},
+			wantRecords: nil,
+			wantTotal:   10,
+			wantErr:     false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotRecords, gotTotal, err := s.biz.List(contextx.BackgroundWithLogger(s.logger), tt.args.cond)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("List() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRecords, tt.wantRecords) {
+				t.Errorf("List() gotRecords = %v, want %v", gotRecords, tt.wantRecords)
+			}
+			if gotTotal != tt.wantTotal {
+				t.Errorf("List() gotTotal = %v, want %v", gotTotal, tt.wantTotal)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}

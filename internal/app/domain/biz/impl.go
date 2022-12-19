@@ -31,8 +31,33 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRe
 }
 
 func (i *impl) List(ctx contextx.Contextx, cond bb.ListCondition) (records []*bm.BlockRecord, total int, err error) {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
+	if cond.Page <= 0 {
+		ctx.Error(errorx.ErrInvalidPage.LogMessage, zap.Int("page", cond.Page))
+		return nil, 0, errorx.ErrInvalidPage
+	}
+
+	if cond.Size <= 0 {
+		ctx.Error(errorx.ErrInvalidSize.LogMessage, zap.Int("size", cond.Size))
+		return nil, 0, errorx.ErrInvalidSize
+	}
+
+	condition := repo.ListRecordCondition{
+		Limit:  cond.Size,
+		Offset: (cond.Page - 1) * cond.Size,
+	}
+	ret, err := i.repo.ListRecord(ctx, condition)
+	if err != nil {
+		ctx.Error(errorx.ErrGetRecord.LogMessage, zap.Error(err), zap.Any("condition", condition))
+		return nil, 0, errorx.ErrGetRecord
+	}
+
+	count, err := i.repo.CountRecord(ctx, condition)
+	if err != nil {
+		ctx.Error(errorx.ErrCountRecord.LogMessage, zap.Error(err), zap.Any("condition", condition))
+		return nil, 0, errorx.ErrCountRecord
+	}
+
+	return ret, count, nil
 }
 
 func (i *impl) ScanByHeight(ctx contextx.Contextx, height uint64) (record *bm.BlockRecord, next bool, err error) {
@@ -51,6 +76,8 @@ func (i *impl) ScanByHeight(ctx contextx.Contextx, height uint64) (record *bm.Bl
 	if ret.Height+1 <= peakHeight {
 		next = true
 	}
+
+	// todo: 2022/12/19|sean|create record into database
 
 	return ret, next, nil
 }
