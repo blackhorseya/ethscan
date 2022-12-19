@@ -102,8 +102,17 @@ func (i *impl) GetRecordByHash(ctx contextx.Contextx, hash string) (record *bm.B
 }
 
 func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := `insert into records (hash, height, parent_hash, timestamp) values (:hash, :height, :parent_hash, :timestamp)`
+
+	_, err := i.rw.NamedExecContext(timeout, stmt, newBlockRecord(record))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *impl) UpdateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error {

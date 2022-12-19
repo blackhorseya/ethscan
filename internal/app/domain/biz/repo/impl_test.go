@@ -122,3 +122,47 @@ func (s *suiteTester) Test_impl_GetRecordByHash() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_CreateRecord() {
+	type args struct {
+		record *bm.BlockRecord
+		mock   func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "create record then error",
+			args: args{record: &bm.BlockRecord{Hash: "hash", Height: 0, ParentHash: "parent", Timestamp: timestamppb.New(now)}, mock: func() {
+				s.rw.ExpectExec(`insert into records`).
+					WithArgs("hash", uint64(0), "parent", sqlmock.AnyArg()).
+					WillReturnError(errors.New("error"))
+			}},
+			wantErr: true,
+		},
+		{
+			name: "ok",
+			args: args{record: &bm.BlockRecord{Hash: "hash", Height: 0, ParentHash: "parent", Timestamp: timestamppb.New(now)}, mock: func() {
+				s.rw.ExpectExec(`insert into records`).
+					WithArgs("hash", uint64(0), "parent", sqlmock.AnyArg()).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+			}},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			if err := s.repo.CreateRecord(contextx.BackgroundWithLogger(s.logger), tt.args.record); (err != nil) != tt.wantErr {
+				t.Errorf("CreateRecord() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}
