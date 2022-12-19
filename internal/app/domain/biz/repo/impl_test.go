@@ -166,3 +166,71 @@ func (s *suiteTester) Test_impl_CreateRecord() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_ListRecord() {
+	type args struct {
+		condition ListRecordCondition
+		mock      func()
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantRecords []*bm.BlockRecord
+		wantErr     bool
+	}{
+		{
+			name: "list record then error",
+			args: args{condition: ListRecordCondition{Limit: 10, Offset: 10}, mock: func() {
+				s.rw.ExpectQuery(`select hash, height, parent_hash, timestamp from records`).
+					WithArgs(10, 10).
+					WillReturnError(errors.New("error"))
+			}},
+			wantRecords: nil,
+			wantErr:     true,
+		},
+		{
+			name: "list record then not found",
+			args: args{condition: ListRecordCondition{Limit: 10, Offset: 10}, mock: func() {
+				s.rw.ExpectQuery(`select hash, height, parent_hash, timestamp from records`).
+					WithArgs(10, 10).
+					WillReturnRows(sqlmock.NewRows(columns))
+			}},
+			wantRecords: nil,
+			wantErr:     false,
+		},
+		{
+			name: "ok",
+			args: args{condition: ListRecordCondition{Limit: 10, Offset: 10}, mock: func() {
+				s.rw.ExpectQuery(`select hash, height, parent_hash, timestamp from records`).
+					WithArgs(10, 10).
+					WillReturnRows(sqlmock.NewRows(columns).
+						AddRow(
+							"hash",
+							uint64(0),
+							"parent",
+							now,
+						))
+			}},
+			wantRecords: []*bm.BlockRecord{{Hash: "hash", Height: 0, ParentHash: "parent", Timestamp: timestamppb.New(now)}},
+			wantErr:     false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotRecords, err := s.repo.ListRecord(contextx.BackgroundWithLogger(s.logger), tt.args.condition)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListRecord() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRecords, tt.wantRecords) {
+				t.Errorf("ListRecord() gotRecords = %v, want %v", gotRecords, tt.wantRecords)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}

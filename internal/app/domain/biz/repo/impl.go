@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/blackhorseya/portto/pkg/contextx"
@@ -99,6 +100,61 @@ func (i *impl) GetRecordByHash(ctx contextx.Contextx, hash string) (record *bm.B
 	}
 
 	return resp.ToEntity(), nil
+}
+
+func (i *impl) ListRecord(ctx contextx.Contextx, condition ListRecordCondition) (records []*bm.BlockRecord, err error) {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	query := []string{`select hash, height, parent_hash, timestamp from records`}
+	var args []interface{}
+
+	if condition.Limit != 0 {
+		query = append(query, `limit ?`)
+		args = append(args, condition.Limit)
+	}
+
+	if condition.Offset != 0 {
+		query = append(query, `offset ?`)
+		args = append(args, condition.Offset)
+	}
+
+	stmt := strings.Join(query, " ")
+
+	var resp []*blockRecord
+	err = i.rw.SelectContext(timeout, &resp, stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp) == 0 {
+		return nil, nil
+	}
+
+	ret := make([]*bm.BlockRecord, len(resp))
+	for idx, record := range resp {
+		ret[idx] = record.ToEntity()
+	}
+
+	return ret, nil
+}
+
+func (i *impl) CountRecord(ctx contextx.Contextx, condition ListRecordCondition) (total int, err error) {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := `select count(*) from records`
+
+	ret := 0
+	err = i.rw.QueryRowxContext(timeout, stmt).Scan(&ret)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, nil
+		}
+
+		return 0, err
+	}
+
+	return ret, nil
 }
 
 func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error {

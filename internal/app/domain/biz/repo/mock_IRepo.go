@@ -14,6 +14,27 @@ type MockIRepo struct {
 	mock.Mock
 }
 
+// CountRecord provides a mock function with given fields: ctx, condition
+func (_m *MockIRepo) CountRecord(ctx contextx.Contextx, condition ListRecordCondition) (int, error) {
+	ret := _m.Called(ctx, condition)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, ListRecordCondition) int); ok {
+		r0 = rf(ctx, condition)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, ListRecordCondition) error); ok {
+		r1 = rf(ctx, condition)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateRecord provides a mock function with given fields: ctx, record
 func (_m *MockIRepo) CreateRecord(ctx contextx.Contextx, record *model.BlockRecord) error {
 	ret := _m.Called(ctx, record)
@@ -88,6 +109,29 @@ func (_m *MockIRepo) GetRecordByHash(ctx contextx.Contextx, hash string) (*model
 	var r1 error
 	if rf, ok := ret.Get(1).(func(contextx.Contextx, string) error); ok {
 		r1 = rf(ctx, hash)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListRecord provides a mock function with given fields: ctx, condition
+func (_m *MockIRepo) ListRecord(ctx contextx.Contextx, condition ListRecordCondition) ([]*model.BlockRecord, error) {
+	ret := _m.Called(ctx, condition)
+
+	var r0 []*model.BlockRecord
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, ListRecordCondition) []*model.BlockRecord); ok {
+		r0 = rf(ctx, condition)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*model.BlockRecord)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, ListRecordCondition) error); ok {
+		r1 = rf(ctx, condition)
 	} else {
 		r1 = ret.Error(1)
 	}
