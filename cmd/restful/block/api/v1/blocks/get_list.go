@@ -1,7 +1,14 @@
 package blocks
 
 import (
+	"net/http"
+	"strconv"
+
+	"github.com/blackhorseya/portto/internal/pkg/errorx"
+	"github.com/blackhorseya/portto/pkg/contextx"
+	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	"github.com/blackhorseya/portto/pkg/entity/domain/block/model" // import struct
+	"github.com/blackhorseya/portto/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,5 +29,29 @@ type listResponse struct {
 // @Success 500 {object} er.Error
 // @Router /v1/blocks [get]
 func (i *impl) List(c *gin.Context) {
-	// todo: 2022/12/19|sean|impl me
+	ctx, ok := c.MustGet(string(contextx.KeyCtx)).(contextx.Contextx)
+	if !ok {
+		_ = c.Error(errorx.ErrContextx)
+		return
+	}
+
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	size, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	ret, total, err := i.biz.List(ctx, bb.ListCondition{Page: page, Size: size})
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response.OK.WithData(listResponse{Total: total, List: ret}))
 }

@@ -109,6 +109,8 @@ func (i *impl) ListRecord(ctx contextx.Contextx, condition ListRecordCondition) 
 	query := []string{`select hash, height, parent_hash, timestamp from records`}
 	var args []interface{}
 
+	query = append(query, `order by timestamp desc`)
+
 	if condition.Limit != 0 {
 		query = append(query, `limit ?`)
 		args = append(args, condition.Limit)
