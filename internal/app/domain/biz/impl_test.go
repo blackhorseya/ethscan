@@ -35,6 +35,54 @@ func TestAll(t *testing.T) {
 	suite.Run(t, new(suiteTester))
 }
 
+func (s *suiteTester) Test_impl_GetByHash() {
+	type args struct {
+		hash string
+		mock func()
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantRecord *bm.BlockRecord
+		wantErr    bool
+	}{
+		{
+			name: "get record by hash then error",
+			args: args{hash: "hash", mock: func() {
+				s.repo.On("GetRecordByHash", mock.Anything, "hash").Return(nil, errors.New("error")).Once()
+			}},
+			wantRecord: nil,
+			wantErr:    true,
+		},
+		{
+			name: "ok",
+			args: args{hash: "hash", mock: func() {
+				s.repo.On("GetRecordByHash", mock.Anything, "hash").Return(&bm.BlockRecord{Hash: "hash"}, nil).Once()
+			}},
+			wantRecord: &bm.BlockRecord{Hash: "hash"},
+			wantErr:    false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotRecord, err := s.biz.GetByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRecord, tt.wantRecord) {
+				t.Errorf("GetByHash() gotRecord = %v, want %v", gotRecord, tt.wantRecord)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}
+
 func (s *suiteTester) Test_impl_ScanByHeight() {
 	type args struct {
 		height uint64

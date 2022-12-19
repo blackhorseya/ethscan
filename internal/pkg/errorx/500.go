@@ -10,6 +10,8 @@ const (
 	_errServer = "Internal server error"
 
 	_errBlockchain = "Failed to connect to blockchain"
+
+	_errDatabase = "Failed to connect to database"
 )
 
 var (
@@ -24,4 +26,10 @@ var (
 	// ErrFetchRecord means failed to fetch block record
 	ErrFetchRecord = er.New(http.StatusInternalServerError, 50011, _errBlockchain, "failed to fetch block record")
 )
+
+var (
+	// ErrGetRecord means failed to get block record
+	ErrGetRecord = er.New(http.StatusInternalServerError, 50050, _errDatabase, "failed to get block record")
+)
+
 

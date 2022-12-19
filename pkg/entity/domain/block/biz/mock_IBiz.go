@@ -38,7 +38,7 @@ func (_m *MockIBiz) GetByHash(ctx contextx.Contextx, hash string) (*model.BlockR
 }
 
 // List provides a mock function with given fields: ctx, cond
-func (_m *MockIBiz) List(ctx contextx.Contextx, cond ListCondition) ([]*model.BlockRecord, error) {
+func (_m *MockIBiz) List(ctx contextx.Contextx, cond ListCondition) ([]*model.BlockRecord, int, error) {
 	ret := _m.Called(ctx, cond)
 
 	var r0 []*model.BlockRecord
@@ -50,14 +50,21 @@ func (_m *MockIBiz) List(ctx contextx.Contextx, cond ListCondition) ([]*model.Bl
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(contextx.Contextx, ListCondition) error); ok {
+	var r1 int
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, ListCondition) int); ok {
 		r1 = rf(ctx, cond)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	var r2 error
+	if rf, ok := ret.Get(2).(func(contextx.Contextx, ListCondition) error); ok {
+		r2 = rf(ctx, cond)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // ScanByHeight provides a mock function with given fields: ctx, height

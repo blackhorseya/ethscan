@@ -21,11 +21,16 @@ func NewImpl(repo repo.IRepo) bb.IBiz {
 }
 
 func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRecord, err error) {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
+	ret, err := i.repo.GetRecordByHash(ctx, hash)
+	if err != nil {
+		ctx.Error(errorx.ErrGetRecord.LogMessage, zap.Error(err), zap.String("hash", hash))
+		return nil, errorx.ErrGetRecord
+	}
+
+	return ret, nil
 }
 
-func (i *impl) List(ctx contextx.Contextx, cond bb.ListCondition) (records []*bm.BlockRecord, err error) {
+func (i *impl) List(ctx contextx.Contextx, cond bb.ListCondition) (records []*bm.BlockRecord, total int, err error) {
 	// todo: 2022/12/18|sean|impl me
 	panic("implement me")
 }
