@@ -85,8 +85,8 @@ type BlockRecord struct {
 	ParentHash string `protobuf:"bytes,3,opt,name=parent_hash,json=parentHash,proto3" json:"parent_hash,omitempty"`
 	// @gotags: json:"transactions"
 	TransactionIds []string `protobuf:"bytes,4,rep,name=transaction_ids,json=transactionIds,proto3" json:"transactions"`
-	// @gotags: json:"block_time"
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"block_time"`
+	// @gotags: json:"-"
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"-"`
 	Depth     int64                  `protobuf:"varint,6,opt,name=depth,proto3" json:"depth,omitempty"`
 	Status    BlockStatus            `protobuf:"varint,7,opt,name=status,proto3,enum=block.BlockStatus" json:"status,omitempty"`
 }

@@ -126,7 +126,6 @@ func (s *suiteTester) Test_impl_ScanByHeight() {
 			wantNext:   true,
 			wantErr:    false,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		s.T().Run(tt.name, func(t *testing.T) {

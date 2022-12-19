@@ -19,7 +19,7 @@ message BlockRecord {
   string parent_hash = 3;
   // @gotags: json:"transactions"
   repeated string transaction_ids = 4;
-  // @gotags: json:"block_time"
+  // @gotags: json:"-"
   google.protobuf.Timestamp timestamp = 5;
   int64 depth = 6;
   BlockStatus status = 7;

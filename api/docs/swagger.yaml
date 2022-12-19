@@ -1,4 +1,71 @@
 basePath: /api
+definitions:
+  cmd_restful_block_api_v1_blocks.listResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.BlockRecord'
+        type: array
+      total:
+        type: integer
+    type: object
+  er.Error:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.BlockRecord'
+        type: array
+      total:
+        type: integer
+    type: object
+  model.BlockRecord:
+    properties:
+      block_hash:
+        description: '@gotags: json:"block_hash"'
+        type: string
+      block_num:
+        description: '@gotags: json:"block_num"'
+        type: integer
+      depth:
+        type: integer
+      parent_hash:
+        type: string
+      status:
+        $ref: '#/definitions/model.BlockStatus'
+      transactions:
+        description: '@gotags: json:"transactions"'
+        items:
+          type: string
+        type: array
+    type: object
+  model.BlockStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-varnames:
+    - BlockStatus_BLOCK_STATUS_UNSPECIFIED
+    - BlockStatus_BLOCK_STATUS_STABLE
+    - BlockStatus_BLOCK_STATUS_UNSTABLE
+    - BlockStatus_BLOCK_STATUS_REORG
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
 info:
   contact:
     email: blackhorseya@gmail.com
@@ -10,5 +77,70 @@ info:
     url: https://spdx.org/licenses/GPL-3.0-only.html
   title: Portto API
   version: 0.0.1
-paths: {}
+paths:
+  /v1/blocks:
+    get:
+      consumes:
+      - application/json
+      description: List block records
+      parameters:
+      - default: 1
+        description: page
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/er.Error'
+      summary: List block records
+      tags:
+      - Blocks
+  /v1/blocks/{hash}:
+    get:
+      consumes:
+      - application/json
+      description: Get a block record by hash
+      parameters:
+      - description: hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.BlockRecord'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/er.Error'
+      summary: Get a block record by hash
+      tags:
+      - Blocks
 swagger: "2.0"

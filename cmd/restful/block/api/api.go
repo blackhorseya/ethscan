@@ -4,8 +4,10 @@ import (
 	"net/http"
 
 	_ "github.com/blackhorseya/portto/api/docs" // import swagger spec
+	v1 "github.com/blackhorseya/portto/cmd/restful/block/api/v1"
 	"github.com/blackhorseya/portto/internal/pkg/errorx"
 	"github.com/blackhorseya/portto/pkg/contextx"
+	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	"github.com/blackhorseya/portto/pkg/response"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -15,7 +17,7 @@ import (
 type impl struct {
 }
 
-func Handle(g *gin.RouterGroup) {
+func Handle(g *gin.RouterGroup, biz bb.IBiz) {
 	i := &impl{}
 
 	if gin.Mode() != gin.ReleaseMode {
@@ -24,6 +26,8 @@ func Handle(g *gin.RouterGroup) {
 
 	g.GET("readiness", i.Readiness)
 	g.GET("liveness", i.Liveness)
+
+	v1.Handle(g.Group("/v1"), biz)
 }
 
 func (i *impl) Readiness(c *gin.Context) {
