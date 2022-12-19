@@ -103,9 +103,9 @@ update-package: ## update package and commit
 	@git commit -m "build: update package"
 
 .PHONY: migrate-up
-migrate-up: ## run migration up
-	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations up
+migrate-up: check-SVC_NAME ## run migration up
+	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) up
 
 .PHONY: migrate-down
-migrate-down: ## run migration down
-	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations down
+migrate-down: check-SVC_NAME ## run migration down
+	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) down
