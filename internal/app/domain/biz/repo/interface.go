@@ -21,9 +21,6 @@ type IRepo interface {
 
 	// CreateRecord serve caller to given block record to create into database
 	CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
-
-	// UpdateRecord serve caller to given block record to update
-	UpdateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 }
 
 var ProviderSet = wire.NewSet(NewNodeOptions, NewImpl)

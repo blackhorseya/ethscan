@@ -115,11 +115,6 @@ func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 	return nil
 }
 
-func (i *impl) UpdateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
-}
-
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {
 	return contextx.WithTimeout(ctx, i.opts.Timeout)
 }

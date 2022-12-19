@@ -95,20 +95,6 @@ func (_m *MockIRepo) GetRecordByHash(ctx contextx.Contextx, hash string) (*model
 	return r0, r1
 }
 
-// UpdateRecord provides a mock function with given fields: ctx, record
-func (_m *MockIRepo) UpdateRecord(ctx contextx.Contextx, record *model.BlockRecord) error {
-	ret := _m.Called(ctx, record)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(contextx.Contextx, *model.BlockRecord) error); ok {
-		r0 = rf(ctx, record)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 type mockConstructorTestingTNewMockIRepo interface {
 	mock.TestingT
 	Cleanup(func())
