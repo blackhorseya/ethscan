@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"math/big"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -81,8 +83,22 @@ func (i *impl) FetchRecordByHeight(ctx contextx.Contextx, height uint64) (record
 }
 
 func (i *impl) GetRecordByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRecord, err error) {
-	// todo: 2022/12/18|sean|impl me
-	panic("implement me")
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := `select hash, height, parent_hash, timestamp from records where hash = ?`
+
+	var resp blockRecord
+	err = i.rw.GetContext(timeout, &resp, stmt, hash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return resp.ToEntity(), nil
 }
 
 func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error {
