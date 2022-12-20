@@ -1,0 +1,12 @@
+http:
+  host: 0.0.0.0
+  port: 8080
+  mode: debug
+
+db:
+  url: "root:changeme@tcp(localhost:3306)/portto_activity?charset=utf8mb4&parseTime=True&loc=Local"
+  debug: true
+  conns: 100
+
+node:
+  baseURL: "<BASE_URL>"
