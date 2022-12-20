@@ -90,8 +90,16 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 				completed++
 				return
 			}
-			progress <- record
 
+			err = i.repo.CreateRecord(ctx, record)
+			if err != nil {
+				ctx.Error(errorx.ErrCreateRecord.LogMessage, zap.Error(err), zap.Any("record", record))
+				errC <- errorx.ErrCreateRecord
+				completed++
+				return
+			}
+
+			progress <- record
 			completed++
 			if total == completed {
 				done <- struct{}{}
