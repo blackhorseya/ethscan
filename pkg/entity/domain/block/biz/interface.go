@@ -21,6 +21,6 @@ type IBiz interface {
 	// List serve caller to given condition to get block records
 	List(ctx contextx.Contextx, cond ListCondition) (records []*bm.BlockRecord, total int, err error)
 
-	// ScanByHeight serve caller to given height to get block record
-	ScanByHeight(ctx contextx.Contextx, height uint64) (record *bm.BlockRecord, next bool, err error)
+	// ScanBlock serve caller to scan block records
+	ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, progress chan *bm.BlockRecord, done chan struct{}, errC chan error)
 }

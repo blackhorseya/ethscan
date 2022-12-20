@@ -7,6 +7,8 @@
 package main
 
 import (
+	"github.com/blackhorseya/portto/internal/app/domain/biz"
+	"github.com/blackhorseya/portto/internal/app/domain/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/config"
 	"github.com/blackhorseya/portto/internal/pkg/log"
 	"github.com/blackhorseya/portto/internal/pkg/storage/mariadb"
@@ -32,7 +34,24 @@ func CreateService(path2 string, initHeight2 uint64) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	cronjob := NewCronjob(mainOptions, logger, initHeight2)
+	nodeOptions, err := repo.NewNodeOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	mariadbOptions, err := mariadb.NewOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	db, err := mariadb.NewMariadb(mariadbOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(nodeOptions, db)
+	if err != nil {
+		return nil, err
+	}
+	iBiz := biz.NewImpl(iRepo)
+	cronjob := NewCronjob(mainOptions, logger, initHeight2, iBiz)
 	service, err := NewService(logger, cronjob)
 	if err != nil {
 		return nil, err
@@ -42,7 +61,7 @@ func CreateService(path2 string, initHeight2 uint64) (*Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, biz.ProviderSet, NewService,
 	NewCronjobOptions,
 	NewCronjob,
 )

@@ -67,34 +67,45 @@ func (_m *MockIBiz) List(ctx contextx.Contextx, cond ListCondition) ([]*model.Bl
 	return r0, r1, r2
 }
 
-// ScanByHeight provides a mock function with given fields: ctx, height
-func (_m *MockIBiz) ScanByHeight(ctx contextx.Contextx, height uint64) (*model.BlockRecord, bool, error) {
-	ret := _m.Called(ctx, height)
+// ScanBlock provides a mock function with given fields: ctx, start
+func (_m *MockIBiz) ScanBlock(ctx contextx.Contextx, start uint64) (uint64, chan *model.BlockRecord, chan struct{}, chan error) {
+	ret := _m.Called(ctx, start)
 
-	var r0 *model.BlockRecord
-	if rf, ok := ret.Get(0).(func(contextx.Contextx, uint64) *model.BlockRecord); ok {
-		r0 = rf(ctx, height)
+	var r0 uint64
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, uint64) uint64); ok {
+		r0 = rf(ctx, start)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*model.BlockRecord)
+		r0 = ret.Get(0).(uint64)
+	}
+
+	var r1 chan *model.BlockRecord
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, uint64) chan *model.BlockRecord); ok {
+		r1 = rf(ctx, start)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(chan *model.BlockRecord)
 		}
 	}
 
-	var r1 bool
-	if rf, ok := ret.Get(1).(func(contextx.Contextx, uint64) bool); ok {
-		r1 = rf(ctx, height)
+	var r2 chan struct{}
+	if rf, ok := ret.Get(2).(func(contextx.Contextx, uint64) chan struct{}); ok {
+		r2 = rf(ctx, start)
 	} else {
-		r1 = ret.Get(1).(bool)
+		if ret.Get(2) != nil {
+			r2 = ret.Get(2).(chan struct{})
+		}
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func(contextx.Contextx, uint64) error); ok {
-		r2 = rf(ctx, height)
+	var r3 chan error
+	if rf, ok := ret.Get(3).(func(contextx.Contextx, uint64) chan error); ok {
+		r3 = rf(ctx, start)
 	} else {
-		r2 = ret.Error(2)
+		if ret.Get(3) != nil {
+			r3 = ret.Get(3).(chan error)
+		}
 	}
 
-	return r0, r1, r2
+	return r0, r1, r2, r3
 }
 
 type mockConstructorTestingTNewMockIBiz interface {

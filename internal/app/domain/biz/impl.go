@@ -1,6 +1,8 @@
 package biz
 
 import (
+	"fmt"
+
 	"github.com/blackhorseya/portto/internal/app/domain/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/errorx"
 	"github.com/blackhorseya/portto/pkg/contextx"
@@ -60,24 +62,44 @@ func (i *impl) List(ctx contextx.Contextx, cond bb.ListCondition) (records []*bm
 	return ret, count, nil
 }
 
-func (i *impl) ScanByHeight(ctx contextx.Contextx, height uint64) (record *bm.BlockRecord, next bool, err error) {
-	peakHeight, err := i.repo.FetchCurrentHeight(ctx)
+func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, progress chan *bm.BlockRecord, done chan struct{}, errC chan error) {
+	progress = make(chan *bm.BlockRecord)
+	done = make(chan struct{})
+	errC = make(chan error)
+
+	end, err := i.repo.FetchCurrentHeight(ctx)
 	if err != nil {
 		ctx.Error(errorx.ErrFetchCurrentHeight.LogMessage, zap.Error(err))
-		return nil, false, errorx.ErrFetchCurrentHeight
+		errC <- errorx.ErrFetchCurrentHeight
+		return 0, nil, nil, nil
+	}
+	if start == end {
+		return end, nil, nil, nil
 	}
 
-	ret, err := i.repo.FetchRecordByHeight(ctx, height)
-	if err != nil {
-		ctx.Error(errorx.ErrFetchRecord.LogMessage, zap.Error(err), zap.Uint64("height", height))
-		return nil, false, errorx.ErrFetchRecord
+	ctx.Info(fmt.Sprintf("start to scan from %v to %v", start, end))
+	total := end - start
+	completed := uint64(0)
+	next := start + 1
+	for next <= end {
+		go func(height uint64) {
+			record, err := i.repo.FetchRecordByHeight(ctx, height)
+			if err != nil {
+				ctx.Error(errorx.ErrFetchRecord.LogMessage, zap.Error(err), zap.Uint64("height", height))
+				errC <- errorx.ErrFetchRecord
+				completed++
+				return
+			}
+			progress <- record
+
+			completed++
+			if total == completed {
+				done <- struct{}{}
+			}
+		}(next)
+
+		next++
 	}
 
-	if ret.Height+1 <= peakHeight {
-		next = true
-	}
-
-	// todo: 2022/12/19|sean|create record into database
-
-	return ret, next, nil
+	return end, progress, done, errC
 }

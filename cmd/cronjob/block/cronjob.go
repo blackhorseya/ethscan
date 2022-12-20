@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/blackhorseya/portto/pkg/adapters"
+	"github.com/blackhorseya/portto/pkg/contextx"
+	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -34,20 +37,22 @@ type impl struct {
 	opts   *Options
 	logger *zap.Logger
 
-	initHeight uint64
+	scannedHeight uint64
+	biz           bb.IBiz
 
 	taskC chan time.Time
 	done  chan bool
 }
 
 // NewCronjob create a cronjob instance
-func NewCronjob(opts *Options, logger *zap.Logger, initHeight uint64) adapters.Cronjob {
+func NewCronjob(opts *Options, logger *zap.Logger, initHeight uint64, biz bb.IBiz) adapters.Cronjob {
 	return &impl{
-		opts:       opts,
-		logger:     logger,
-		initHeight: initHeight,
-		taskC:      make(chan time.Time, 1),
-		done:       make(chan bool),
+		opts:          opts,
+		logger:        logger,
+		scannedHeight: initHeight,
+		biz:           biz,
+		taskC:         make(chan time.Time, 1),
+		done:          make(chan bool),
 	}
 }
 
@@ -85,7 +90,7 @@ func (i *impl) worker() {
 		case <-ticker.C:
 			i.executeTo()
 		case <-i.taskC:
-			// todo: 2022/12/18|sean|impl me
+			i.execute()
 		}
 	}
 }
@@ -95,5 +100,27 @@ func (i *impl) executeTo() {
 	case i.taskC <- time.Now():
 	case <-time.After(1 * time.Second):
 		return
+	}
+}
+
+func (i *impl) execute() {
+	ctx := contextx.BackgroundWithLogger(i.logger)
+
+	last, progress, done, _ := i.biz.ScanBlock(ctx, i.scannedHeight)
+	if done == nil {
+		return
+	}
+
+	for {
+		select {
+		case <-done:
+			i.scannedHeight = last
+			i.logger.Info("done", zap.Uint64("peak_height", last))
+			return
+		case record := <-progress:
+			i.logger.Info(fmt.Sprintf("progress(%v/%v)", record.Height, last), zap.Uint64("height", record.Height), zap.String("hash", record.Hash))
+		case <-time.After(5 * time.Second):
+			return
+		}
 	}
 }
