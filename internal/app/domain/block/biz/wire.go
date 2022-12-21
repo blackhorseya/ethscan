@@ -4,7 +4,7 @@
 package biz
 
 import (
-	"github.com/blackhorseya/portto/internal/app/domain/biz/repo"
+	"github.com/blackhorseya/portto/internal/app/domain/block/biz/repo"
 	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	"github.com/google/wire"
 )

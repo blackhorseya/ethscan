@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/blackhorseya/portto/internal/app/domain/biz/repo"
+	repo2 "github.com/blackhorseya/portto/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/portto/pkg/contextx"
 	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
@@ -17,13 +17,13 @@ import (
 type suiteTester struct {
 	suite.Suite
 	logger *zap.Logger
-	repo   *repo.MockIRepo
+	repo   *repo2.MockIRepo
 	biz    bb.IBiz
 }
 
 func (s *suiteTester) SetupTest() {
 	s.logger, _ = zap.NewDevelopment()
-	s.repo = new(repo.MockIRepo)
+	s.repo = new(repo2.MockIRepo)
 	s.biz = CreateBiz(s.repo)
 }
 
@@ -112,7 +112,7 @@ func (s *suiteTester) Test_impl_List() {
 		{
 			name: "list then error",
 			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
-				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, errors.New("error")).Once()
+				s.repo.On("ListRecord", mock.Anything, repo2.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, errors.New("error")).Once()
 			}},
 			wantRecords: nil,
 			wantTotal:   0,
@@ -121,9 +121,9 @@ func (s *suiteTester) Test_impl_List() {
 		{
 			name: "count then error",
 			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
-				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
+				s.repo.On("ListRecord", mock.Anything, repo2.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
 
-				s.repo.On("CountRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(0, errors.New("error")).Once()
+				s.repo.On("CountRecord", mock.Anything, repo2.ListRecordCondition{Limit: 10, Offset: 0}).Return(0, errors.New("error")).Once()
 			}},
 			wantRecords: nil,
 			wantTotal:   0,
@@ -132,9 +132,9 @@ func (s *suiteTester) Test_impl_List() {
 		{
 			name: "ok",
 			args: args{cond: bb.ListCondition{Page: 1, Size: 10}, mock: func() {
-				s.repo.On("ListRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
+				s.repo.On("ListRecord", mock.Anything, repo2.ListRecordCondition{Limit: 10, Offset: 0}).Return(nil, nil).Once()
 
-				s.repo.On("CountRecord", mock.Anything, repo.ListRecordCondition{Limit: 10, Offset: 0}).Return(10, nil).Once()
+				s.repo.On("CountRecord", mock.Anything, repo2.ListRecordCondition{Limit: 10, Offset: 0}).Return(10, nil).Once()
 			}},
 			wantRecords: nil,
 			wantTotal:   10,

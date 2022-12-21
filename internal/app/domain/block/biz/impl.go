@@ -3,7 +3,7 @@ package biz
 import (
 	"fmt"
 
-	"github.com/blackhorseya/portto/internal/app/domain/biz/repo"
+	"github.com/blackhorseya/portto/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/errorx"
 	"github.com/blackhorseya/portto/pkg/contextx"
 	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
@@ -78,6 +78,7 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 	}
 
 	ctx.Info(fmt.Sprintf("start to scan from %v to %v", start, end))
+
 	total := end - start
 	completed := uint64(0)
 	next := start + 1
