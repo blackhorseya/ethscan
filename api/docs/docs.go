@@ -194,7 +194,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.BlockStatus"
                 },
                 "transactions": {
-                    "description": "@gotags: json:\"transactions\"",
+                    "description": "@gotags: json:\"transactions,omitempty\"",
                     "type": "array",
                     "items": {
                         "type": "string"
