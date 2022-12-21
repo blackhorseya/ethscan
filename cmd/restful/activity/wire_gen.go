@@ -7,6 +7,8 @@
 package main
 
 import (
+	"github.com/blackhorseya/portto/internal/app/domain/activity/biz"
+	"github.com/blackhorseya/portto/internal/app/domain/activity/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/config"
 	"github.com/blackhorseya/portto/internal/pkg/httpx"
 	"github.com/blackhorseya/portto/internal/pkg/log"
@@ -35,7 +37,9 @@ func CreateService(path2 string, id int64) (*Service, error) {
 	}
 	engine := httpx.NewRouter(httpxOptions)
 	server := httpx.NewServer(httpxOptions, logger, engine)
-	adaptersRestful := NewRestful(logger, engine)
+	iRepo := repo.NewImpl()
+	iBiz := biz.NewImpl(iRepo)
+	adaptersRestful := NewRestful(logger, engine, iBiz)
 	service, err := NewService(logger, server, adaptersRestful)
 	if err != nil {
 		return nil, err
@@ -45,6 +49,6 @@ func CreateService(path2 string, id int64) (*Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, biz.ProviderSet, NewService,
 	NewRestful,
 )

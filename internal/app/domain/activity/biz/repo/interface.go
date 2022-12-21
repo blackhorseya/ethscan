@@ -5,9 +5,9 @@ import (
 )
 
 // IRepo declare activity repository interface
+//
 //go:generate mockery --all --inpackage
 type IRepo interface {
-
 }
 
-var ProviderSet = wire.NewSet()
+var ProviderSet = wire.NewSet(NewImpl)
