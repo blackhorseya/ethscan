@@ -72,14 +72,19 @@ func (i *impl) FetchRecordByHeight(ctx contextx.Contextx, height uint64) (record
 		return nil, err
 	}
 
+	txIds := make([]string, len(block.Transactions()))
+	for idx, tx := range block.Transactions() {
+		txIds[idx] = tx.Hash().String()
+	}
+
 	return &bm.BlockRecord{
 		Height:         block.NumberU64(),
 		Hash:           block.Hash().String(),
 		ParentHash:     block.ParentHash().String(),
-		TransactionIds: nil,
+		TransactionIds: txIds,
 		Timestamp:      timestamppb.New(time.Unix(int64(block.Time()), 0)),
-		Depth:          0,
-		Status:         bm.BlockStatus_BLOCK_STATUS_UNSPECIFIED,
+		Depth:          1,
+		Status:         bm.BlockStatus_BLOCK_STATUS_UNSTABLE,
 	}, nil
 }
 
