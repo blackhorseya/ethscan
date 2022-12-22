@@ -35,7 +35,7 @@ func (s *suiteTester) SetupTest() {
 	s.rw = rw
 
 	opts := &NodeOptions{BaseURL: "http://localhost", Timeout: 5 * time.Second}
-	s.repo, _ = CreateRepo(opts, sqlx.NewDb(db, "mysql"))
+	s.repo, _ = CreateRepo(opts, sqlx.NewDb(db, "mysql"), nil)
 }
 
 func (s *suiteTester) assertExpectation(t *testing.T) {

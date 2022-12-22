@@ -13,6 +13,7 @@ import (
 	"github.com/blackhorseya/portto/internal/pkg/log"
 	"github.com/blackhorseya/portto/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/portto/internal/pkg/transports/httpx"
+	"github.com/blackhorseya/portto/internal/pkg/transports/kafka"
 	"github.com/google/wire"
 )
 
@@ -49,7 +50,15 @@ func CreateService(path2 string, id int64) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(nodeOptions, db)
+	producerOptions, err := kafka.NewProducerOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	producer, err := kafka.NewProducer(producerOptions)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(nodeOptions, db, producer)
 	if err != nil {
 		return nil, err
 	}
@@ -64,6 +73,6 @@ func CreateService(path2 string, id int64) (*Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, biz.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, kafka.ProviderProducer, biz.ProviderSet, NewService,
 	NewRestful,
 )

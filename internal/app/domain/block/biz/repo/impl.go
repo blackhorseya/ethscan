@@ -3,17 +3,23 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"math/big"
 	"strings"
 	"time"
 
 	"github.com/blackhorseya/portto/pkg/contextx"
 	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+var (
+	topicNewBlock = "new_block"
 )
 
 type NodeOptions struct {
@@ -33,21 +39,23 @@ func NewNodeOptions(v *viper.Viper) (*NodeOptions, error) {
 }
 
 type impl struct {
-	opts *NodeOptions
-	rw   *sqlx.DB
-	eth  *ethclient.Client
+	opts     *NodeOptions
+	rw       *sqlx.DB
+	eth      *ethclient.Client
+	producer *kafka.Producer
 }
 
-func NewImpl(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
+func NewImpl(opts *NodeOptions, rw *sqlx.DB, producer *kafka.Producer) (IRepo, error) {
 	client, err := ethclient.Dial(opts.BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
 	return &impl{
-		opts: opts,
-		rw:   rw,
-		eth:  client,
+		opts:     opts,
+		rw:       rw,
+		eth:      client,
+		producer: producer,
 	}, nil
 }
 
@@ -171,6 +179,29 @@ func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 	stmt := `insert into records (hash, height, parent_hash, timestamp) values (:hash, :height, :parent_hash, :timestamp)`
 
 	_, err := i.rw.NamedExecContext(timeout, stmt, newBlockRecord(record))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *impl) PublishRecord(ctx contextx.Contextx, record *bm.BlockRecord, delivery chan kafka.Event) error {
+	key := record.Hash
+	value, err := json.Marshal(record)
+	if err != nil {
+		return err
+	}
+
+	err = i.producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &topicNewBlock, Partition: kafka.PartitionAny},
+		Value:          value,
+		Key:            []byte(key),
+		Timestamp:      time.Now(),
+		TimestampType:  kafka.TimestampCreateTime,
+		Opaque:         nil,
+		Headers:        nil,
+	}, delivery)
 	if err != nil {
 		return err
 	}

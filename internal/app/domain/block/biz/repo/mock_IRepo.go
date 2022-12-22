@@ -4,6 +4,8 @@ package repo
 
 import (
 	contextx "github.com/blackhorseya/portto/pkg/contextx"
+	kafka "github.com/confluentinc/confluent-kafka-go/kafka"
+
 	mock "github.com/stretchr/testify/mock"
 
 	model "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
@@ -137,6 +139,20 @@ func (_m *MockIRepo) ListRecord(ctx contextx.Contextx, condition ListRecordCondi
 	}
 
 	return r0, r1
+}
+
+// PublishRecord provides a mock function with given fields: ctx, record, delivery
+func (_m *MockIRepo) PublishRecord(ctx contextx.Contextx, record *model.BlockRecord, delivery chan kafka.Event) error {
+	ret := _m.Called(ctx, record, delivery)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, *model.BlockRecord, chan kafka.Event) error); ok {
+		r0 = rf(ctx, record, delivery)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 type mockConstructorTestingTNewMockIRepo interface {
