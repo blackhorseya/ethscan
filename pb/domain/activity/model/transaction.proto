@@ -8,6 +8,7 @@ message Event {
 }
 
 message Transaction {
+  string block_hash = 8;
   // @gotags: json:"tx_hash"
   string hash = 1;
   string from = 2;
