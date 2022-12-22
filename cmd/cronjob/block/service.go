@@ -6,18 +6,19 @@ import (
 	"syscall"
 
 	"github.com/blackhorseya/ethscan/pkg/adapters"
+	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
-type Service struct {
+type service struct {
 	logger  *zap.Logger
 	cronjob adapters.Cronjob
 }
 
 // NewService serve caller to create service instance
-func NewService(logger *zap.Logger, cronjob adapters.Cronjob) (*Service, error) {
-	svc := &Service{
+func NewService(logger *zap.Logger, cronjob adapters.Cronjob) (app.Service, error) {
+	svc := &service{
 		logger:  logger.With(zap.String("type", "service")),
 		cronjob: cronjob,
 	}
@@ -25,7 +26,7 @@ func NewService(logger *zap.Logger, cronjob adapters.Cronjob) (*Service, error) 
 	return svc, nil
 }
 
-func (s *Service) Start() error {
+func (s *service) Start() error {
 	if s.cronjob != nil {
 		err := s.cronjob.Start()
 		if err != nil {
@@ -36,7 +37,7 @@ func (s *Service) Start() error {
 	return nil
 }
 
-func (s *Service) AwaitSignal() error {
+func (s *service) AwaitSignal() error {
 	c := make(chan os.Signal, 1)
 	signal.Reset(syscall.SIGTERM, syscall.SIGINT)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)

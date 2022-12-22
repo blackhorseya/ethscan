@@ -14,12 +14,13 @@ import (
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/httpx"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
+	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func CreateService(path2 string, id int64) (*Service, error) {
+func CreateService(path2 string, id int64) (app.Service, error) {
 	viper, err := config.NewConfig(path2)
 	if err != nil {
 		return nil, err
@@ -64,11 +65,11 @@ func CreateService(path2 string, id int64) (*Service, error) {
 	}
 	iBiz := biz.NewImpl(iRepo)
 	adaptersRestful := NewRestful(logger, engine, iBiz)
-	service, err := NewService(logger, server, adaptersRestful)
+	appService, err := NewService(logger, server, adaptersRestful)
 	if err != nil {
 		return nil, err
 	}
-	return service, nil
+	return appService, nil
 }
 
 // wire.go:

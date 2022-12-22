@@ -9,6 +9,7 @@ import (
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/httpx"
+	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
 )
 
@@ -31,6 +32,6 @@ var providerSet = wire.NewSet(
 	NewRestful,
 )
 
-func CreateService(path string, id int64) (*Service, error) {
+func CreateService(path string, id int64) (app.Service, error) {
 	panic(wire.Build(providerSet))
 }
