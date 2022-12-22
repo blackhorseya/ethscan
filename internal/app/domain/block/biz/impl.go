@@ -29,6 +29,8 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRe
 		return nil, errorx.ErrGetRecord
 	}
 
+	// todo: 2022/12/23|sean|get txns id by hash of block from activity grpc
+
 	return ret, nil
 }
 
