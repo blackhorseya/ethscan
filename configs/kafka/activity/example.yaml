@@ -1,0 +1,7 @@
+kafka:
+  producer:
+    bootstrap.servers: "<SERVER>"
+    security.protocol: SASL_SSL
+    sasl.mechanisms: PLAIN
+    sasl.username: "<USERNAME>"
+    sasl.password: "<PASSWORD>"
