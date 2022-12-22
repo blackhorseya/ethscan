@@ -65,7 +65,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse"
+                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.listResponse"
                                         }
                                     }
                                 }

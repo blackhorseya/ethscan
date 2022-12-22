@@ -10,9 +10,9 @@ import (
 	"github.com/blackhorseya/portto/internal/app/domain/activity/biz"
 	"github.com/blackhorseya/portto/internal/app/domain/activity/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/config"
-	"github.com/blackhorseya/portto/internal/pkg/httpx"
 	"github.com/blackhorseya/portto/internal/pkg/log"
 	"github.com/blackhorseya/portto/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/portto/internal/pkg/transports/httpx"
 	"github.com/google/wire"
 )
 
