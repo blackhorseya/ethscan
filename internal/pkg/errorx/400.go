@@ -3,7 +3,7 @@ package errorx
 import (
 	"net/http"
 
-	"github.com/blackhorseya/portto/pkg/er"
+	"github.com/blackhorseya/ethscan/pkg/er"
 )
 
 const (

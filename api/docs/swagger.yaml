@@ -17,7 +17,7 @@ definitions:
       msg:
         type: string
     type: object
-  github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse:
+  github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse:
     properties:
       list:
         items:
@@ -71,11 +71,11 @@ info:
     email: blackhorseya@gmail.com
     name: sean.zheng
     url: https://blog.seancheng.space
-  description: API for Portto
+  description: API for ethscan
   license:
     name: GPL-3.0
     url: https://spdx.org/licenses/GPL-3.0-only.html
-  title: Portto API
+  title: ethscan API
   version: 0.0.1
 paths:
   /v1/blocks:
@@ -104,7 +104,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/cmd_restful_block_api_v1_blocks.listResponse'
+                  $ref: '#/definitions/github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse'
               type: object
         "500":
           description: Internal Server Error

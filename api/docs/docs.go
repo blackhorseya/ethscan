@@ -65,7 +65,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.listResponse"
+                                            "$ref": "#/definitions/github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse"
                                         }
                                     }
                                 }
@@ -159,7 +159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse": {
+        "github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse": {
             "type": "object",
             "properties": {
                 "list": {
@@ -238,8 +238,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Portto API",
-	Description:      "API for Portto",
+	Title:            "ethscan API",
+	Description:      "API for ethscan",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

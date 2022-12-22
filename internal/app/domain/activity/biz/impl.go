@@ -1,10 +1,10 @@
 package biz
 
 import (
-	"github.com/blackhorseya/portto/internal/app/domain/activity/biz/repo"
-	"github.com/blackhorseya/portto/pkg/contextx"
-	ab "github.com/blackhorseya/portto/pkg/entity/domain/activity/biz"
-	"github.com/blackhorseya/portto/pkg/entity/domain/activity/model"
+	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz/repo"
+	"github.com/blackhorseya/ethscan/pkg/contextx"
+	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
+	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 	"github.com/google/wire"
 )
 

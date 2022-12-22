@@ -3,7 +3,7 @@ package repo
 import (
 	"time"
 
-	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
+	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

@@ -1,4 +1,4 @@
-PROJECT_NAME=portto
+PROJECT_NAME=ethscan
 SVC_NAME=
 SVC_ADAPTER=
 

@@ -1,4 +1,4 @@
-module github.com/blackhorseya/portto
+module github.com/blackhorseya/ethscan
 
 go 1.19
 

@@ -4,9 +4,9 @@
 package main
 
 import (
-	"github.com/blackhorseya/portto/internal/pkg/config"
-	"github.com/blackhorseya/portto/internal/pkg/log"
-	"github.com/blackhorseya/portto/pkg/app"
+	"github.com/blackhorseya/ethscan/internal/pkg/config"
+	"github.com/blackhorseya/ethscan/internal/pkg/log"
+	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
 )
 

@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"github.com/blackhorseya/portto/pkg/contextx"
-	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
+	"github.com/blackhorseya/ethscan/pkg/contextx"
+	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/wire"
 )

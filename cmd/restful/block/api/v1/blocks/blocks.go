@@ -1,7 +1,7 @@
 package blocks
 
 import (
-	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
+	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/gin-gonic/gin"
 )
 

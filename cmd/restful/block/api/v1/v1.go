@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/blackhorseya/portto/cmd/restful/block/api/v1/blocks"
-	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
+	"github.com/blackhorseya/ethscan/cmd/restful/block/api/v1/blocks"
+	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/gin-gonic/gin"
 )
 

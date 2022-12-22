@@ -1,6 +1,6 @@
 syntax = "proto3";
 package activity;
-option go_package = "github.com/blackhorseya/portto/pkg/entity/domain/activity/model";
+option go_package = "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model";
 
 message Event {
   uint64 index = 1;

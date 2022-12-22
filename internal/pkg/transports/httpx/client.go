@@ -3,7 +3,7 @@ package httpx
 import (
 	"net/http"
 
-	"github.com/blackhorseya/portto/pkg/httpx"
+	"github.com/blackhorseya/ethscan/pkg/httpx"
 	"github.com/google/wire"
 )
 

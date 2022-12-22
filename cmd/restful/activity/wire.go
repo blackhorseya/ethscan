@@ -4,11 +4,11 @@
 package main
 
 import (
-	"github.com/blackhorseya/portto/internal/app/domain/activity/biz"
-	"github.com/blackhorseya/portto/internal/pkg/config"
-	"github.com/blackhorseya/portto/internal/pkg/log"
-	"github.com/blackhorseya/portto/internal/pkg/storage/mariadb"
-	"github.com/blackhorseya/portto/internal/pkg/transports/httpx"
+	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz"
+	"github.com/blackhorseya/ethscan/internal/pkg/config"
+	"github.com/blackhorseya/ethscan/internal/pkg/log"
+	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/ethscan/internal/pkg/transports/httpx"
 	"github.com/google/wire"
 )
 

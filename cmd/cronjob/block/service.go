@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/blackhorseya/portto/pkg/adapters"
+	"github.com/blackhorseya/ethscan/pkg/adapters"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )

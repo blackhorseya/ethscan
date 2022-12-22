@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for Portto",
-        "title": "Portto API",
+        "description": "API for ethscan",
+        "title": "ethscan API",
         "contact": {
             "name": "sean.zheng",
             "url": "https://blog.seancheng.space",
@@ -57,7 +57,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.listResponse"
+                                            "$ref": "#/definitions/github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse"
                                         }
                                     }
                                 }
@@ -151,7 +151,7 @@
                 }
             }
         },
-        "github_com_blackhorseya_portto_cmd_restful_block_api_v1_blocks.listResponse": {
+        "github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse": {
             "type": "object",
             "properties": {
                 "list": {

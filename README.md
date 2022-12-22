@@ -21,7 +21,8 @@
 - cmd: 所有 service 的進入點
 - configs: 組態設定的檔案範本或預設設定
 - deployments: IaaS、PaaS、系統和容器編配部署的組態設定與範本
-- internal: 私有應用程式和函式庫的程式碼，是你不希望其他人在其應用程式或函式庫中匯入的程式碼
+- internal: 私有應用程式和函式庫的程式碼，
+- 是你不希望其他人在其應用程式或函式庫中匯入的程式碼
     - app: 實際 application 實作的地方
     - pkg: 內部函式庫實作的地方
 - pb: 存放所有 `protobuf` 的地方

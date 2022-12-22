@@ -1,8 +1,8 @@
 package biz
 
 import (
-	"github.com/blackhorseya/portto/pkg/contextx"
-	am "github.com/blackhorseya/portto/pkg/entity/domain/activity/model"
+	"github.com/blackhorseya/ethscan/pkg/contextx"
+	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 )
 
 // IBiz declare activity biz interface

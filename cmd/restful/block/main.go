@@ -12,9 +12,9 @@ func init() {
 	flag.Parse()
 }
 
-// @title Portto API
+// @title ethscan API
 // @version 0.0.1
-// @description API for Portto
+// @description API for ethscan
 //
 // @contact.name sean.zheng
 // @contact.email blackhorseya@gmail.com

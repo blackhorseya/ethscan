@@ -1,7 +1,7 @@
 package v1
 
 import (
-	ab "github.com/blackhorseya/portto/pkg/entity/domain/activity/biz"
+	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	"github.com/gin-gonic/gin"
 )
 
