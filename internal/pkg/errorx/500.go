@@ -12,6 +12,8 @@ const (
 	_errBlockchain = "Failed to connect to blockchain"
 
 	_errDatabase = "Failed to connect to database"
+
+	_errKafka = "Failed to connect to kafka"
 )
 
 var (
@@ -38,4 +40,7 @@ var (
 	ErrCreateRecord = er.New(http.StatusInternalServerError, 50052, _errDatabase, "failed to create block record")
 )
 
-
+var (
+	// ErrProduceRecord means failed to produce record to new_block
+	ErrProduceRecord = er.New(http.StatusInternalServerError, 50080, _errKafka, "failed to produce record to new_block")
+)

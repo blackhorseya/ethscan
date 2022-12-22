@@ -1,9 +1,7 @@
-# Portto
+# ethscan
 
-[![Testing](https://github.com/blackhorseya/portto/actions/workflows/test.yaml/badge.svg)](https://github.com/blackhorseya/portto/actions/workflows/test.yaml)
-[![codecov](https://codecov.io/gh/blackhorseya/portto/branch/main/graph/badge.svg?token=OGLkIzTeqe)](https://codecov.io/gh/blackhorseya/portto)
-
-[Source Code](https://github.com/blackhorseya/portto)
+[![Testing](https://github.com/blackhorseya/ethscan/actions/workflows/test.yaml/badge.svg)](https://github.com/blackhorseya/ethscan/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/blackhorseya/ethscan/branch/main/graph/badge.svg?token=OGLkIzTeqe)](https://codecov.io/gh/blackhorseya/ethscan)
 
 ## Architecture
 

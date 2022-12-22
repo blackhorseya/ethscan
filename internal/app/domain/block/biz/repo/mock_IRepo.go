@@ -141,8 +141,8 @@ func (_m *MockIRepo) ListRecord(ctx contextx.Contextx, condition ListRecordCondi
 	return r0, r1
 }
 
-// PublishRecord provides a mock function with given fields: ctx, record, delivery
-func (_m *MockIRepo) PublishRecord(ctx contextx.Contextx, record *model.BlockRecord, delivery chan kafka.Event) error {
+// ProduceRecord provides a mock function with given fields: ctx, record, delivery
+func (_m *MockIRepo) ProduceRecord(ctx contextx.Contextx, record *model.BlockRecord, delivery chan kafka.Event) error {
 	ret := _m.Called(ctx, record, delivery)
 
 	var r0 error

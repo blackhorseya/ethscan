@@ -34,8 +34,8 @@ type IRepo interface {
 	// CreateRecord serve caller to given block record to create into database
 	CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 
-	// PublishRecord serve caller to given record to publish the record to new_block
-	PublishRecord(ctx contextx.Contextx, record *bm.BlockRecord, delivery chan kafka.Event) error
+	// ProduceRecord serve caller to given record to publish the record to new_block
+	ProduceRecord(ctx contextx.Contextx, record *bm.BlockRecord, delivery chan kafka.Event) error
 }
 
 var ProviderSet = wire.NewSet(NewNodeOptions, NewImpl)

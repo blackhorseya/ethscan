@@ -2,12 +2,14 @@ package biz
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/blackhorseya/portto/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/portto/internal/pkg/errorx"
 	"github.com/blackhorseya/portto/pkg/contextx"
 	bb "github.com/blackhorseya/portto/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/portto/pkg/entity/domain/block/model"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 )
@@ -91,6 +93,21 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 				ctx.Error(errorx.ErrFetchRecord.LogMessage, zap.Error(err), zap.Uint64("height", height))
 				errC <- errorx.ErrFetchRecord
 				completed++
+				return
+			}
+
+			delivery := make(chan kafka.Event)
+			defer close(delivery)
+			err = i.repo.ProduceRecord(ctx, record, delivery)
+			if err != nil {
+				ctx.Error(errorx.ErrProduceRecord.LogMessage, zap.Error(err), zap.Any("record", record))
+				completed++
+				return
+			}
+			select {
+			case e := <-delivery:
+				ctx.Debug("send block record to kafka new_block", zap.String("event", e.String()))
+			case <-time.After(5 * time.Second):
 				return
 			}
 

@@ -186,7 +186,7 @@ func (i *impl) CreateRecord(ctx contextx.Contextx, record *bm.BlockRecord) error
 	return nil
 }
 
-func (i *impl) PublishRecord(ctx contextx.Contextx, record *bm.BlockRecord, delivery chan kafka.Event) error {
+func (i *impl) ProduceRecord(ctx contextx.Contextx, record *bm.BlockRecord, delivery chan kafka.Event) error {
 	key := record.Hash
 	value, err := json.Marshal(record)
 	if err != nil {
