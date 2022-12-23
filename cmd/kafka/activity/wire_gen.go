@@ -39,7 +39,14 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo := repo.NewImpl()
+	nodeOptions, err := repo.NewNodeOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(nodeOptions)
+	if err != nil {
+		return nil, err
+	}
 	iBiz := biz.NewImpl(iRepo)
 	adaptersKafka := NewKafka(logger, consumer, iBiz)
 	service, err := NewService(logger, adaptersKafka)
