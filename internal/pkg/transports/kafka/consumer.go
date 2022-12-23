@@ -12,8 +12,8 @@ type ConsumerOptions struct {
 	Consumer   map[string]interface{} `json:"consumer" yaml:"consumer"`
 }
 
-func NewConsumerOptions(v *viper.Viper) (*ProducerOptions, error) {
-	opts := &ProducerOptions{}
+func NewConsumerOptions(v *viper.Viper) (*ConsumerOptions, error) {
+	opts := &ConsumerOptions{}
 
 	err := v.UnmarshalKey("kafka", &opts)
 	if err != nil {

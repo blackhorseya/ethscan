@@ -7,8 +7,11 @@
 package main
 
 import (
+	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz"
+	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
+	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
 	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
 )
@@ -28,7 +31,18 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service, err := NewService(logger)
+	consumerOptions, err := kafka.NewConsumerOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	consumer, err := kafka.NewConsumer(consumerOptions)
+	if err != nil {
+		return nil, err
+	}
+	iRepo := repo.NewImpl()
+	iBiz := biz.NewImpl(iRepo)
+	adaptersKafka := NewKafka(logger, consumer, iBiz)
+	service, err := NewService(logger, adaptersKafka)
 	if err != nil {
 		return nil, err
 	}
@@ -37,4 +51,6 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, NewService)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, kafka.ProviderConsumer, biz.ProviderSet, NewService,
+	NewKafka,
+)

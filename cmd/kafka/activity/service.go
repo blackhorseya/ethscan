@@ -5,24 +5,33 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/blackhorseya/ethscan/pkg/adapters"
 	"github.com/blackhorseya/ethscan/pkg/app"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
 type Service struct {
 	logger *zap.Logger
+	kafka  adapters.Kafka
 }
 
-func NewService(logger *zap.Logger) (app.Service, error) {
+func NewService(logger *zap.Logger, kafka adapters.Kafka) (app.Service, error) {
 	svc := &Service{
 		logger: logger.With(zap.String("type", "service")),
+		kafka:  kafka,
 	}
 
 	return svc, nil
 }
 
 func (s *Service) Start() error {
-	// todo: 2022/12/23|sean|start the service
+	if s.kafka != nil {
+		err := s.kafka.Start()
+		if err != nil {
+			return errors.Wrap(err, "kafka start error")
+		}
+	}
 
 	return nil
 }
@@ -35,7 +44,12 @@ func (s *Service) AwaitSignal() error {
 	if sig := <-c; true {
 		s.logger.Info("receive a signal", zap.String("signal", sig.String()))
 
-		// todo: 2022/12/23|sean|stop the service
+		if s.kafka != nil {
+			err := s.kafka.Stop()
+			if err != nil {
+				s.logger.Warn("stop kafka error", zap.Error(err))
+			}
+		}
 
 		os.Exit(0)
 	}
