@@ -98,3 +98,8 @@ readinessProbe:
   periodSeconds: 5
   failureThreshold: 1
   successThreshold: 1
+
+conf: |-
+  log:
+    encoding: console
+    level: debug
