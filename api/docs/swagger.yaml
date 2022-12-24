@@ -58,6 +58,36 @@ definitions:
     - BlockStatus_BLOCK_STATUS_STABLE
     - BlockStatus_BLOCK_STATUS_UNSTABLE
     - BlockStatus_BLOCK_STATUS_REORG
+  model.Event:
+    properties:
+      data:
+        type: string
+      index:
+        type: integer
+    type: object
+  model.Transaction:
+    properties:
+      block_hash:
+        type: string
+      data:
+        type: string
+      from:
+        type: string
+      logs:
+        description: '@gotags: json:"logs,omitempty"'
+        items:
+          $ref: '#/definitions/model.Event'
+        type: array
+      nonce:
+        type: integer
+      to:
+        type: string
+      tx_hash:
+        description: '@gotags: json:"tx_hash"'
+        type: string
+      value:
+        type: string
+    type: object
   response.Response:
     properties:
       code:
@@ -143,4 +173,34 @@ paths:
       summary: Get a block record by hash
       tags:
       - Blocks
+  /v1/transactions/{hash}:
+    get:
+      consumes:
+      - application/json
+      description: Get a transaction by hash
+      parameters:
+      - description: hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Transaction'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/er.Error'
+      summary: Get a transaction by hash
+      tags:
+      - Transactions
 swagger: "2.0"

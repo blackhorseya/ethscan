@@ -1,11 +1,16 @@
-package v1
+package transactions
 
 import (
-	"github.com/blackhorseya/ethscan/cmd/restful/activity/api/v1/transactions"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	"github.com/gin-gonic/gin"
 )
 
 func Handle(g *gin.RouterGroup, biz ab.IBiz) {
-	transactions.Handle(g.Group("/transactions"), biz)
+	i := &impl{biz: biz}
+
+	g.GET("/:hash", i.GetByHash)
+}
+
+type impl struct {
+	biz ab.IBiz
 }

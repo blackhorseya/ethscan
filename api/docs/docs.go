@@ -130,6 +130,56 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/transactions/{hash}": {
+            "get": {
+                "description": "Get a transaction by hash",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get a transaction by hash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "hash",
+                        "name": "hash",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Transaction"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/er.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -216,6 +266,51 @@ const docTemplate = `{
                 "BlockStatus_BLOCK_STATUS_UNSTABLE",
                 "BlockStatus_BLOCK_STATUS_REORG"
             ]
+        },
+        "model.Event": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "index": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Transaction": {
+            "type": "object",
+            "properties": {
+                "block_hash": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "logs": {
+                    "description": "@gotags: json:\"logs,omitempty\"",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Event"
+                    }
+                },
+                "nonce": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "description": "@gotags: json:\"tx_hash\"",
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
         },
         "response.Response": {
             "type": "object",
