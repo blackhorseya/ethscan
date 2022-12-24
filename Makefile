@@ -9,6 +9,9 @@ REGISTRY=gcr.io
 PROJECT_ID=sean-side
 IMAGE_NAME=$(REGISTRY)/$(PROJECT_ID)/$(APP_NAME)
 
+NS=$(DEPLOY_TO)-$(PROJECT_NAME)
+HELM_REPO_NAME=$(PROJECT_NAME)
+
 VERSION=latest
 DEPLOY_TO=uat
 
@@ -109,3 +112,14 @@ migrate-up: check-SVC_NAME ## run migration up
 .PHONY: migrate-down
 migrate-down: check-SVC_NAME ## run migration down
 	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) down
+
+.PHONY: deploy
+deploy: check-SVC_NAME check-SVC_ADAPTER check-DEPLOY_TO ## deploy the application via helm 3
+	@helm -n $(NS) upgrade --install $(DEPLOY_TO)-$(APP_NAME) \
+	$(HELM_REPO_NAME)/$(PROJECT_NAME) --history-max 3 \
+	-f ./deployments/values/$(SVC_ADAPTER)/$(SVC_NAME)/$(DEPLOY_TO).yaml
+
+ifeq ($(VERSION), latest)
+	@echo "Restart deployment/$(DEPLOY_TO)-$(APP_NAME)"
+	@kubectl rollout restart deployment $(DEPLOY_TO)-$(APP_NAME)
+endif
