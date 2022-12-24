@@ -1,5 +1,7 @@
 FROM golang:alpine AS builder
 
+RUN apk add --no-cache gcc librdkafka alpine-sdk
+
 WORKDIR /src
 
 COPY go.mod go.sum ./
@@ -12,7 +14,7 @@ COPY internal ./internal
 
 ARG MAIN_FOLDER
 
-RUN GOOS=linux GOARCH=amd64 go build -o server ${MAIN_FOLDER}
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -tags musl -o server ${MAIN_FOLDER}
 
 FROM alpine:3 AS final
 
