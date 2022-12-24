@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: gcr.io/sean-side/ethscan
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -80,3 +80,26 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+startupProbe:
+  enabled: true
+  periodSeconds: 5
+  failureThreshold: 100
+  successThreshold: 1
+
+livenessProbe:
+  enabled: true
+  periodSeconds: 5
+  failureThreshold: 1
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  periodSeconds: 5
+  failureThreshold: 1
+  successThreshold: 1
+
+conf: |-
+  log:
+    encoding: console
+    level: debug
