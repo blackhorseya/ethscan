@@ -27,6 +27,9 @@ var (
 
 	// ErrFetchRecord means failed to fetch block record
 	ErrFetchRecord = er.New(http.StatusInternalServerError, 50011, _errBlockchain, "failed to fetch block record")
+
+	// ErrFetchTx means failed to fetch transaction
+	ErrFetchTx = er.New(http.StatusInternalServerError, 50012, _errBlockchain, "failed to fetch transaction")
 )
 
 var (
