@@ -15,9 +15,7 @@ import (
 )
 
 func Handle(g *gin.RouterGroup, biz ab.IBiz) {
-	if gin.Mode() != gin.ReleaseMode {
-		g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
+	g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	i := &impl{}
 

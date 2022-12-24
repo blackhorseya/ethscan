@@ -18,11 +18,9 @@ type impl struct {
 }
 
 func Handle(g *gin.RouterGroup, biz bb.IBiz) {
-	i := &impl{}
+	g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	if gin.Mode() != gin.ReleaseMode {
-		g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
+	i := &impl{}
 
 	g.GET("readiness", i.Readiness)
 	g.GET("liveness", i.Liveness)
