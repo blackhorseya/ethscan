@@ -5,9 +5,9 @@ on:
     branches-ignore:
       - 'release-**'
     paths:
-      - './cmd'
-      - './internal'
-      - './pkg'
+      - 'cmd/**'
+      - 'internal/**'
+      - 'pkg/**'
 
 jobs:
   test:
