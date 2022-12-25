@@ -54,7 +54,7 @@ build-image: check-SVC_NAME check-SVC_ADAPTER check-VERSION ## build docker imag
 	--label "app.version=$(VERSION)" \
 	--build-arg MAIN_FOLDER=$(MAIN_FOLDER) \
 	--platform linux/amd64 \
-	--pull --cache-from=$(REGISTRY)/$(APP_NAME) \
+	--pull --cache-from=$(IMAGE_NAME):latest \
 	-f ./deployments/Dockerfile .
 
 .PHONY: list-images
