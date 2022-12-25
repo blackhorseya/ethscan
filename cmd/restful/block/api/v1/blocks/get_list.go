@@ -14,7 +14,7 @@ import (
 
 type listResponse struct {
 	Total int                  `json:"total"`
-	List  []*model.BlockRecord `json:"list"`
+	List  []*model.BlockRecord `json:"list,omitempty"`
 }
 
 // List
