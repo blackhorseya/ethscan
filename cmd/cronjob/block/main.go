@@ -13,7 +13,7 @@ var (
 )
 
 func init() {
-	_ = flag.Parsed()
+	flag.Parse()
 }
 
 func main() {

@@ -2,14 +2,12 @@ package main
 
 import (
 	"flag"
-
-	"go.uber.org/zap"
 )
 
 var path = flag.String("c", "./configs/restful/activity/local.yaml", "set config file path")
 
 func init() {
-	_ = flag.Parsed()
+	flag.Parse()
 }
 
 // @title ethscan API
@@ -27,16 +25,16 @@ func init() {
 func main() {
 	svc, err := CreateService(*path, 1)
 	if err != nil {
-		zap.S().Fatal(zap.Error(err))
+		panic(err)
 	}
 
 	err = svc.Start()
 	if err != nil {
-		zap.S().Fatal(zap.Error(err))
+		panic(err)
 	}
 
 	err = svc.AwaitSignal()
 	if err != nil {
-		zap.S().Fatal(zap.Error(err))
+		panic(err)
 	}
 }

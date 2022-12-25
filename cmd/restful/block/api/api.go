@@ -18,7 +18,7 @@ type impl struct {
 }
 
 func Handle(g *gin.RouterGroup, biz bb.IBiz) {
-	g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	g.GET("ethscan/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	i := &impl{}
 

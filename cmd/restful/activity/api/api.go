@@ -15,7 +15,7 @@ import (
 )
 
 func Handle(g *gin.RouterGroup, biz ab.IBiz) {
-	g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	g.GET("ethscan/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	i := &impl{}
 

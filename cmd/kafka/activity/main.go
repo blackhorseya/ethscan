@@ -9,7 +9,7 @@ import (
 var path = flag.String("c", "./configs/kafka/activity/local.yaml", "set config file path")
 
 func init() {
-	_ = flag.Parsed()
+	flag.Parse()
 }
 
 func main() {
