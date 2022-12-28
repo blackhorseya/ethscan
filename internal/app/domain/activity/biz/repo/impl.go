@@ -66,11 +66,16 @@ func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transac
 		return nil, err
 	}
 
+	to := ""
+	if resp.To() != nil {
+		to = resp.To().String()
+	}
+
 	ret := &am.Transaction{
 		BlockHash: receipt.BlockHash.String(),
 		Hash:      resp.Hash().String(),
 		From:      msg.From().String(),
-		To:        resp.To().String(),
+		To:        to,
 		Nonce:     resp.Nonce(),
 		Data:      common.Bytes2Hex(resp.Data()),
 		Value:     resp.Value().String(),
@@ -85,7 +90,7 @@ func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
 	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
 	defer cancelFunc()
 
-	stmt := `insert into txns (hash, from, to, block_hash) values (:hash, :from, :to, :block_hash)`
+	stmt := "insert into txns (hash, `from`, `to`, block_hash) values (:hash, :from, :to, :block_hash)"
 
 	_, err := i.rw.NamedExecContext(timeout, stmt, newTransaction(tx))
 	if err != nil {

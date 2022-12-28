@@ -42,7 +42,15 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(nodeOptions)
+	mariadbOptions, err := mariadb.NewOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	db, err := mariadb.NewMariadb(mariadbOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(nodeOptions, db)
 	if err != nil {
 		return nil, err
 	}

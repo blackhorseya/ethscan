@@ -11,6 +11,7 @@ import (
 	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
+	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
 	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
@@ -43,7 +44,15 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(nodeOptions)
+	mariadbOptions, err := mariadb.NewOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	db, err := mariadb.NewMariadb(mariadbOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(nodeOptions, db)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +67,6 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, kafka.ProviderConsumer, biz.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderConsumer, biz.ProviderSet, NewService,
 	NewKafka,
 )

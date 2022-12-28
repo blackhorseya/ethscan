@@ -117,3 +117,7 @@ func (c *Contextx) Elapsed(msg string) func() {
 		c.logger.Debug(msg, zap.Duration("elapsed", elapsed))
 	}
 }
+
+func (c *Contextx) GetLogger() *zap.Logger {
+	return c.logger
+}
