@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 )
 
@@ -31,9 +32,10 @@ func NewNodeOptions(v *viper.Viper) (*NodeOptions, error) {
 type impl struct {
 	opts *NodeOptions
 	eth  *ethclient.Client
+	rw   *sqlx.DB
 }
 
-func NewImpl(opts *NodeOptions) (IRepo, error) {
+func NewImpl(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
 	client, err := ethclient.Dial(opts.BaseURL)
 	if err != nil {
 		return nil, err
@@ -42,6 +44,7 @@ func NewImpl(opts *NodeOptions) (IRepo, error) {
 	return &impl{
 		opts: opts,
 		eth:  client,
+		rw:   rw,
 	}, nil
 }
 
@@ -79,8 +82,17 @@ func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transac
 }
 
 func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
-	// todo: 2022/12/28|sean|impl me
-	panic("implement me")
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := `insert into txns (hash, from, to, block_hash) values (:hash, :from, :to, :block_hash)`
+
+	_, err := i.rw.NamedExecContext(timeout, stmt, newTransaction(tx))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {

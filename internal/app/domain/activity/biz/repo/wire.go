@@ -5,10 +5,11 @@ package repo
 
 import (
 	"github.com/google/wire"
+	"github.com/jmoiron/sqlx"
 )
 
 var testProviderSet = wire.NewSet(NewImpl)
 
-func CreateRepo(opts *NodeOptions) (IRepo, error) {
+func CreateRepo(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
 	panic(wire.Build(testProviderSet))
 }

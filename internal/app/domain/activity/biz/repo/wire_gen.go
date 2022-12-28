@@ -8,12 +8,13 @@ package repo
 
 import (
 	"github.com/google/wire"
+	"github.com/jmoiron/sqlx"
 )
 
 // Injectors from wire.go:
 
-func CreateRepo(opts *NodeOptions) (IRepo, error) {
-	iRepo, err := NewImpl(opts)
+func CreateRepo(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
+	iRepo, err := NewImpl(opts, rw)
 	if err != nil {
 		return nil, err
 	}
