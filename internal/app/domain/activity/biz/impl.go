@@ -6,6 +6,7 @@ import (
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
+	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 )
@@ -30,4 +31,9 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction
 	}
 
 	return ret, nil
+}
+
+func (i *impl) HandleNewBlock(ctx contextx.Contextx, record *bm.BlockRecord) (txns []*am.Transaction, err error) {
+	// todo: 2022/12/28|sean|impl me
+	panic("implement me")
 }
