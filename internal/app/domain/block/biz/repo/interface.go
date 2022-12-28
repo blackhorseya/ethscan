@@ -28,6 +28,9 @@ type IRepo interface {
 	// ListRecord serve caller to given condition to list block record from database
 	ListRecord(ctx contextx.Contextx, condition ListRecordCondition) (records []*bm.BlockRecord, err error)
 
+	// GetLatestRecord serve caller to get the latest record
+	GetLatestRecord(ctx contextx.Contextx) (record *bm.BlockRecord, err error)
+
 	// CountRecord serve caller to given condition to count block records from database
 	CountRecord(ctx contextx.Contextx, condition ListRecordCondition) (total int, err error)
 

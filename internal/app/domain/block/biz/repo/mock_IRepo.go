@@ -95,6 +95,29 @@ func (_m *MockIRepo) FetchRecordByHeight(ctx contextx.Contextx, height uint64) (
 	return r0, r1
 }
 
+// GetLatestRecord provides a mock function with given fields: ctx
+func (_m *MockIRepo) GetLatestRecord(ctx contextx.Contextx) (*model.BlockRecord, error) {
+	ret := _m.Called(ctx)
+
+	var r0 *model.BlockRecord
+	if rf, ok := ret.Get(0).(func(contextx.Contextx) *model.BlockRecord); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.BlockRecord)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetRecordByHash provides a mock function with given fields: ctx, hash
 func (_m *MockIRepo) GetRecordByHash(ctx contextx.Contextx, hash string) (*model.BlockRecord, error) {
 	ret := _m.Called(ctx, hash)

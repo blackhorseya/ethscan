@@ -153,6 +153,21 @@ func (i *impl) ListRecord(ctx contextx.Contextx, condition ListRecordCondition) 
 	return ret, nil
 }
 
+func (i *impl) GetLatestRecord(ctx contextx.Contextx) (record *bm.BlockRecord, err error) {
+	records, err := i.ListRecord(ctx, ListRecordCondition{
+		Limit:  1,
+		Offset: 0,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, errors.New("not found records")
+	}
+
+	return records[0], nil
+}
+
 func (i *impl) CountRecord(ctx contextx.Contextx, condition ListRecordCondition) (total int, err error) {
 	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
 	defer cancelFunc()
