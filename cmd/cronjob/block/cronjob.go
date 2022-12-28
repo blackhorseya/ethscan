@@ -115,7 +115,7 @@ func (i *impl) execute() {
 		select {
 		case <-done:
 			i.scannedHeight = last
-			i.logger.Info("done", zap.Uint64("peak_height", last))
+			i.logger.Info("complete a cronjob worker", zap.Uint64("from_height", i.scannedHeight), zap.Uint64("to_height", last))
 			return
 		case record := <-progress:
 			i.logger.Info(fmt.Sprintf("progress(%v/%v)", record.Height, last), zap.Uint64("height", record.Height), zap.String("hash", record.Hash))

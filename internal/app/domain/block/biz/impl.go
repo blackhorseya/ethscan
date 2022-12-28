@@ -2,6 +2,7 @@ package biz
 
 import (
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
@@ -71,28 +72,44 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 	done = make(chan struct{})
 	errC = make(chan error)
 
-	end, err := i.repo.FetchCurrentHeight(ctx)
+	peakHeight, err := i.repo.FetchCurrentHeight(ctx)
 	if err != nil {
 		ctx.Error(errorx.ErrFetchCurrentHeight.LogMessage, zap.Error(err))
 		errC <- errorx.ErrFetchCurrentHeight
 		return 0, nil, nil, nil
 	}
-	if start == end {
-		return end, nil, nil, nil
+
+	scanned, err := i.repo.GetLatestRecord(ctx)
+	if err != nil {
+		ctx.Error(errorx.ErrGetRecord.LogMessage, zap.Error(err))
+		errC <- errorx.ErrGetRecord
+		return 0, nil, nil, nil
+	}
+	scannedHeight := scanned.Height
+
+	if scannedHeight == peakHeight {
+		return peakHeight, nil, nil, nil
 	}
 
-	ctx.Info(fmt.Sprintf("start to scan from %v to %v", start, end))
-
-	total := end - start
+	total := peakHeight - scannedHeight
+	nextHeight := scannedHeight + 1
 	completed := uint64(0)
-	next := start + 1
-	for next <= end {
+
+	ctx.Info(fmt.Sprintf("start to scan from %v to %v", nextHeight, peakHeight))
+
+	for nextHeight <= peakHeight {
 		go func(height uint64) {
+			defer func() {
+				atomic.AddUint64(&completed, 1)
+				if total == atomic.LoadUint64(&completed) {
+					done <- struct{}{}
+				}
+			}()
+
 			record, err := i.repo.FetchRecordByHeight(ctx, height)
 			if err != nil {
 				ctx.Error(errorx.ErrFetchRecord.LogMessage, zap.Error(err), zap.Uint64("height", height))
 				errC <- errorx.ErrFetchRecord
-				completed++
 				return
 			}
 
@@ -101,7 +118,6 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 			err = i.repo.ProduceRecord(ctx, record, delivery)
 			if err != nil {
 				ctx.Error(errorx.ErrProduceRecord.LogMessage, zap.Error(err), zap.Any("record", record))
-				completed++
 				return
 			}
 			select {
@@ -115,19 +131,14 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 			if err != nil {
 				ctx.Error(errorx.ErrCreateRecord.LogMessage, zap.Error(err), zap.Any("record", record))
 				errC <- errorx.ErrCreateRecord
-				completed++
 				return
 			}
 
 			progress <- record
-			completed++
-			if total == completed {
-				done <- struct{}{}
-			}
-		}(next)
+		}(nextHeight)
 
-		next++
+		nextHeight++
 	}
 
-	return end, progress, done, errC
+	return peakHeight, progress, done, errC
 }
