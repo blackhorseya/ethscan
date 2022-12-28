@@ -113,25 +113,34 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 				return
 			}
 
-			delivery := make(chan kafka.Event)
-			defer close(delivery)
-			err = i.repo.ProduceRecord(ctx, record, delivery)
+			exists, err := i.repo.GetRecordByHash(ctx, record.Hash)
 			if err != nil {
-				ctx.Error(errorx.ErrProduceRecord.LogMessage, zap.Error(err), zap.Any("record", record))
-				return
-			}
-			select {
-			case e := <-delivery:
-				ctx.Debug("send block record to kafka new_block", zap.String("event", e.String()))
-			case <-time.After(5 * time.Second):
+				ctx.Error(errorx.ErrGetRecord.LogMessage, zap.Error(err), zap.String("hash", record.Hash))
+				errC <- errorx.ErrGetRecord
 				return
 			}
 
-			err = i.repo.CreateRecord(ctx, record)
-			if err != nil {
-				ctx.Error(errorx.ErrCreateRecord.LogMessage, zap.Error(err), zap.Any("record", record))
-				errC <- errorx.ErrCreateRecord
-				return
+			if exists == nil {
+				delivery := make(chan kafka.Event)
+				defer close(delivery)
+				err = i.repo.ProduceRecord(ctx, record, delivery)
+				if err != nil {
+					ctx.Error(errorx.ErrProduceRecord.LogMessage, zap.Error(err), zap.Any("record", record))
+					return
+				}
+				select {
+				case e := <-delivery:
+					ctx.Debug("send block record to kafka new_block", zap.String("event", e.String()))
+				case <-time.After(5 * time.Second):
+					return
+				}
+
+				err = i.repo.CreateRecord(ctx, record)
+				if err != nil {
+					ctx.Error(errorx.ErrCreateRecord.LogMessage, zap.Error(err), zap.Any("record", record))
+					errC <- errorx.ErrCreateRecord
+					return
+				}
 			}
 
 			progress <- record
