@@ -9,3 +9,6 @@ create table if not exists records
   default charset = utf8mb4
   collate = utf8mb4_general_ci
     comment = 'block record list';
+
+create index height_index on records (height);
+create index timestamp_index on records (timestamp);

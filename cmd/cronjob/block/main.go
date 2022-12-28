@@ -7,7 +7,7 @@ import (
 var (
 	path = flag.String("c", "./configs/cronjob/block/local.yaml", "set config file path")
 
-	initHeight = flag.Uint64("init-height", 16258466, "set init height for start")
+	initHeight = flag.Uint64("init-height", 16283079, "set init height for start")
 )
 
 func init() {
