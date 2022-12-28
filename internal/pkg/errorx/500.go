@@ -41,6 +41,9 @@ var (
 
 	// ErrCreateRecord means failed to create block record
 	ErrCreateRecord = er.New(http.StatusInternalServerError, 50052, _errDatabase, "failed to create block record")
+
+	// ErrCreateTx means failed to create transaction
+	ErrCreateTx = er.New(http.StatusInternalServerError, 50053, _errDatabase, "failed to create transaction")
 )
 
 var (

@@ -34,6 +34,21 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction
 }
 
 func (i *impl) HandleNewBlock(ctx contextx.Contextx, record *bm.BlockRecord) (txns []*am.Transaction, err error) {
-	// todo: 2022/12/28|sean|impl me
-	panic("implement me")
+	for idx, id := range record.TransactionIds {
+		go func(idx int, hash string) {
+			tx, err := i.repo.FetchTxByHash(ctx, hash)
+			if err != nil {
+				ctx.Error(errorx.ErrFetchTx.LogMessage, zap.Error(err), zap.String("hash", hash))
+				return
+			}
+
+			err = i.repo.CreateTx(ctx, tx)
+			if err != nil {
+				ctx.Error(errorx.ErrCreateTx.LogMessage, zap.Error(err), zap.Any("tx", tx))
+				return
+			}
+		}(idx, id)
+	}
+
+	return
 }

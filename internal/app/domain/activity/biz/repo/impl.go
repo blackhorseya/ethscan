@@ -78,6 +78,11 @@ func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transac
 	return ret, nil
 }
 
+func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
+	// todo: 2022/12/28|sean|impl me
+	panic("implement me")
+}
+
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {
 	return contextx.WithTimeout(ctx, i.opts.Timeout)
 }
