@@ -5,6 +5,15 @@ type Restful interface {
 	InitRouting() error
 }
 
+// Grpc grpc adapter
+type Grpc interface {
+	// Start to run
+	Start() error
+
+	// Stop to end
+	Stop() error
+}
+
 // Kafka is a consumer adapters
 type Kafka interface {
 	// Start to listen event
