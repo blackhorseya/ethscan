@@ -44,6 +44,9 @@ var (
 
 	// ErrCreateTx means failed to create transaction
 	ErrCreateTx = er.New(http.StatusInternalServerError, 50053, _errDatabase, "failed to create transaction")
+
+	// ErrGetTx means failed to get transaction
+	ErrGetTx = er.New(http.StatusInternalServerError, 50054, _errDatabase, "failed to get transaction")
 )
 
 var (

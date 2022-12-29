@@ -24,10 +24,10 @@ func NewImpl(repo repo.IRepo) ab.IBiz {
 }
 
 func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error) {
-	ret, err := i.repo.FetchTxByHash(ctx, hash)
+	ret, err := i.repo.GetTxByHash(ctx, hash)
 	if err != nil {
-		ctx.Error(errorx.ErrFetchTx.LogMessage, zap.Error(err), zap.String("hash", hash))
-		return nil, errorx.ErrFetchTx
+		ctx.Error(errorx.ErrGetTx.LogMessage, zap.Error(err), zap.String("hash", hash))
+		return nil, errorx.ErrGetTx
 	}
 
 	return ret, nil
