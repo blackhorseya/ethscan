@@ -33,6 +33,11 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction
 	return ret, nil
 }
 
+func (i *impl) ListTxns(ctx contextx.Contextx, cond ab.ListTxnsCondition) (txns []*am.Transaction, err error) {
+	// todo: 2022/12/29|sean|impl me
+	panic("implement me")
+}
+
 func (i *impl) HandleNewBlock(ctx contextx.Contextx, record *bm.BlockRecord) (txns []*am.Transaction, err error) {
 	var ret []*am.Transaction
 	for _, tx := range record.Transactions {
