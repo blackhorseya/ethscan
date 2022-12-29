@@ -19,3 +19,16 @@ func newTransaction(val *am.Transaction) *transaction {
 		BlockHash: val.BlockHash,
 	}
 }
+
+func (t *transaction) ToEntity() *am.Transaction {
+	return &am.Transaction{
+		BlockHash: t.BlockHash,
+		Hash:      t.Hash,
+		From:      t.From,
+		To:        t.To,
+		Nonce:     0,
+		Data:      "",
+		Value:     "",
+		Events:    nil,
+	}
+}

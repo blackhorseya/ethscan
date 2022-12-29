@@ -116,3 +116,65 @@ func (s *suiteTester) Test_impl_CreateTx() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_GetTxByHash() {
+	type args struct {
+		hash string
+		mock func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantTx  *am.Transaction
+		wantErr bool
+	}{
+		{
+			name: "get tx then error",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").WillReturnError(errors.New("error"))
+			}},
+			wantTx:  nil,
+			wantErr: true,
+		},
+		{
+			name: "get tx then not found",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").
+					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}))
+			}},
+			wantTx:  nil,
+			wantErr: false,
+		},
+		{
+			name: "ok",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").
+					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}).
+						AddRow("0x0", "", "", ""))
+			}},
+			wantTx:  &am.Transaction{Hash: "0x0"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotTx, err := s.repo.GetTxByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetTxByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotTx, tt.wantTx) {
+				t.Errorf("GetTxByHash() gotTx = %v, want %v", gotTx, tt.wantTx)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}

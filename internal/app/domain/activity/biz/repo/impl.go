@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/blackhorseya/ethscan/pkg/contextx"
@@ -10,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -98,6 +100,25 @@ func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
 	}
 
 	return nil
+}
+
+func (i *impl) GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error) {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := "select hash, `from`, `to`, block_hash from txns where hash = ?"
+
+	var resp transaction
+	err = i.rw.GetContext(timeout, &resp, stmt, hash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return resp.ToEntity(), nil
 }
 
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {
