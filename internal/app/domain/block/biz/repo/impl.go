@@ -11,6 +11,8 @@ import (
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -80,19 +82,39 @@ func (i *impl) FetchRecordByHeight(ctx contextx.Contextx, height uint64) (record
 		return nil, err
 	}
 
-	txIds := make([]string, len(block.Transactions()))
-	for idx, tx := range block.Transactions() {
-		txIds[idx] = tx.Hash().String()
+	var txns []*bm.Transaction
+	for _, tx := range block.Transactions() {
+		to := ""
+		if tx.To() != nil {
+			to = tx.To().String()
+		}
+
+		msg, err := tx.AsMessage(types.LatestSignerForChainID(tx.ChainId()), nil)
+		if err != nil {
+			return nil, err
+		}
+
+		txns = append(txns, &bm.Transaction{
+			BlockHash: block.Hash().String(),
+			Hash:      tx.Hash().String(),
+			From:      msg.From().String(),
+			To:        to,
+			Nonce:     tx.Nonce(),
+			Data:      common.Bytes2Hex(tx.Data()),
+			Value:     tx.Value().String(),
+			// todo: 2022/12/23|sean|fill the event log
+			Events: nil,
+		})
 	}
 
 	return &bm.BlockRecord{
-		Height:         block.NumberU64(),
-		Hash:           block.Hash().String(),
-		ParentHash:     block.ParentHash().String(),
-		TransactionIds: txIds,
-		Timestamp:      timestamppb.New(time.Unix(int64(block.Time()), 0)),
-		Depth:          1,
-		Status:         bm.BlockStatus_BLOCK_STATUS_UNSTABLE,
+		Height:       block.NumberU64(),
+		Hash:         block.Hash().String(),
+		ParentHash:   block.ParentHash().String(),
+		Transactions: txns,
+		Timestamp:    timestamppb.New(time.Unix(int64(block.Time()), 0)),
+		Depth:        1,
+		Status:       bm.BlockStatus_BLOCK_STATUS_UNSTABLE,
 	}, nil
 }
 

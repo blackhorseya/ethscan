@@ -34,21 +34,33 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction
 }
 
 func (i *impl) HandleNewBlock(ctx contextx.Contextx, record *bm.BlockRecord) (txns []*am.Transaction, err error) {
-	for idx, id := range record.TransactionIds {
-		go func(idx int, hash string) {
-			tx, err := i.repo.FetchTxByHash(ctx, hash)
-			if err != nil {
-				ctx.Error(errorx.ErrFetchTx.LogMessage, zap.Error(err), zap.String("hash", hash))
-				return
-			}
+	var ret []*am.Transaction
+	for _, tx := range record.Transactions {
+		var events []*am.Event
+		for _, event := range tx.Events {
+			events = append(events, &am.Event{
+				Index: event.Index,
+				Data:  event.Data,
+			})
+		}
+		input := &am.Transaction{
+			BlockHash: tx.BlockHash,
+			Hash:      tx.Hash,
+			From:      tx.From,
+			To:        tx.To,
+			Nonce:     tx.Nonce,
+			Data:      tx.Data,
+			Value:     tx.Value,
+			Events:    events,
+		}
 
-			err = i.repo.CreateTx(ctx, tx)
-			if err != nil {
-				ctx.Error(errorx.ErrCreateTx.LogMessage, zap.Error(err), zap.Any("tx", tx))
-				return
-			}
-		}(idx, id)
+		err = i.repo.CreateTx(ctx, input)
+		if err != nil {
+			ctx.Error(errorx.ErrCreateTx.LogMessage, zap.Error(err), zap.Any("tx", tx))
+		}
+
+		ret = append(ret, input)
 	}
 
-	return
+	return ret, nil
 }
