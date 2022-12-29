@@ -34,8 +34,18 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction
 }
 
 func (i *impl) ListTxns(ctx contextx.Contextx, cond ab.ListTxnsCondition) (txns []*am.Transaction, err error) {
-	// todo: 2022/12/29|sean|impl me
-	panic("implement me")
+	condition := repo.ListTxnsCondition{
+		BlockHash: cond.BlockHash,
+		Limit:     0,
+		Offset:    0,
+	}
+	ret, err := i.repo.ListTxns(ctx, condition)
+	if err != nil {
+		ctx.Error(errorx.ErrGetTx.LogMessage, zap.Error(err), zap.Any("condition", condition))
+		return nil, errorx.ErrGetTx
+	}
+
+	return ret, nil
 }
 
 func (i *impl) HandleNewBlock(ctx contextx.Contextx, record *bm.BlockRecord) (txns []*am.Transaction, err error) {
