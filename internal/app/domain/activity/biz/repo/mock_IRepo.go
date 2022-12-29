@@ -74,6 +74,29 @@ func (_m *MockIRepo) GetTxByHash(ctx contextx.Contextx, hash string) (*model.Tra
 	return r0, r1
 }
 
+// ListTxns provides a mock function with given fields: ctx, cond
+func (_m *MockIRepo) ListTxns(ctx contextx.Contextx, cond ListTxnsCondition) ([]*model.Transaction, error) {
+	ret := _m.Called(ctx, cond)
+
+	var r0 []*model.Transaction
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, ListTxnsCondition) []*model.Transaction); ok {
+		r0 = rf(ctx, cond)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*model.Transaction)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, ListTxnsCondition) error); ok {
+		r1 = rf(ctx, cond)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewMockIRepo interface {
 	mock.TestingT
 	Cleanup(func())

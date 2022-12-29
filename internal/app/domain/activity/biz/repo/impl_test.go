@@ -14,6 +14,10 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	columns = []string{"hash", "from", "to", "block_hash"}
+)
+
 type suiteTester struct {
 	suite.Suite
 	logger *zap.Logger
@@ -172,6 +176,70 @@ func (s *suiteTester) Test_impl_GetTxByHash() {
 			}
 			if !reflect.DeepEqual(gotTx, tt.wantTx) {
 				t.Errorf("GetTxByHash() gotTx = %v, want %v", gotTx, tt.wantTx)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}
+
+func (s *suiteTester) Test_impl_ListTxns() {
+	type args struct {
+		cond ListTxnsCondition
+		mock func()
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantTxns []*am.Transaction
+		wantErr  bool
+	}{
+		{
+			name: "list then error",
+			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").WillReturnError(errors.New("error"))
+			}},
+			wantTxns: nil,
+			wantErr:  true,
+		},
+		{
+			name: "list then not found",
+			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").WillReturnRows(sqlmock.NewRows(columns))
+			}},
+			wantTxns: nil,
+			wantErr:  false,
+		},
+		{
+			name: "ok",
+			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").WillReturnRows(sqlmock.NewRows(columns).AddRow(
+					"",
+					"",
+					"",
+					"0x0",
+				))
+			}},
+			wantTxns: []*am.Transaction{{BlockHash: "0x0"}},
+			wantErr:  false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotTxns, err := s.repo.ListTxns(contextx.BackgroundWithLogger(s.logger), tt.args.cond)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListTxns() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotTxns, tt.wantTxns) {
+				t.Errorf("ListTxns() gotTxns = %v, want %v", gotTxns, tt.wantTxns)
 			}
 
 			s.assertExpectation(t)

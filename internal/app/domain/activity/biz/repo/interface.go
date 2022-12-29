@@ -6,6 +6,13 @@ import (
 	"github.com/google/wire"
 )
 
+type ListTxnsCondition struct {
+	BlockHash string `json:"block_hash"`
+
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+}
+
 // IRepo declare activity repository interface
 //
 //go:generate mockery --all --inpackage
@@ -17,6 +24,9 @@ type IRepo interface {
 
 	// GetTxByHash serve caller to given hash to get transaction
 	GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error)
+
+	// ListTxns serve caller to given condition to list txns
+	ListTxns(ctx contextx.Contextx, cond ListTxnsCondition) (txns []*am.Transaction, err error)
 }
 
 var ProviderSet = wire.NewSet(NewNodeOptions, NewImpl)
