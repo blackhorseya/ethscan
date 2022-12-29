@@ -12,6 +12,11 @@ import (
 type IRepo interface {
 	// FetchTxByHash serve caller to given hash to get transaction from rpc
 	FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error)
+
+	CreateTx(ctx contextx.Contextx, tx *am.Transaction) error
+
+	// GetTxByHash serve caller to given hash to get transaction
+	GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error)
 }
 
 var ProviderSet = wire.NewSet(NewNodeOptions, NewImpl)

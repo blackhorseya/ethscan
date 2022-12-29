@@ -4,6 +4,8 @@ package biz
 
 import (
 	contextx "github.com/blackhorseya/ethscan/pkg/contextx"
+	blockmodel "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
+
 	mock "github.com/stretchr/testify/mock"
 
 	model "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
@@ -30,6 +32,29 @@ func (_m *MockIBiz) GetByHash(ctx contextx.Contextx, hash string) (*model.Transa
 	var r1 error
 	if rf, ok := ret.Get(1).(func(contextx.Contextx, string) error); ok {
 		r1 = rf(ctx, hash)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// HandleNewBlock provides a mock function with given fields: ctx, record
+func (_m *MockIBiz) HandleNewBlock(ctx contextx.Contextx, record *blockmodel.BlockRecord) ([]*model.Transaction, error) {
+	ret := _m.Called(ctx, record)
+
+	var r0 []*model.Transaction
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, *blockmodel.BlockRecord) []*model.Transaction); ok {
+		r0 = rf(ctx, record)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*model.Transaction)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, *blockmodel.BlockRecord) error); ok {
+		r1 = rf(ctx, record)
 	} else {
 		r1 = ret.Error(1)
 	}

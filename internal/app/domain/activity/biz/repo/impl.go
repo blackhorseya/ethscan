@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/blackhorseya/ethscan/pkg/contextx"
@@ -9,6 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -31,9 +34,10 @@ func NewNodeOptions(v *viper.Viper) (*NodeOptions, error) {
 type impl struct {
 	opts *NodeOptions
 	eth  *ethclient.Client
+	rw   *sqlx.DB
 }
 
-func NewImpl(opts *NodeOptions) (IRepo, error) {
+func NewImpl(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
 	client, err := ethclient.Dial(opts.BaseURL)
 	if err != nil {
 		return nil, err
@@ -42,6 +46,7 @@ func NewImpl(opts *NodeOptions) (IRepo, error) {
 	return &impl{
 		opts: opts,
 		eth:  client,
+		rw:   rw,
 	}, nil
 }
 
@@ -63,11 +68,16 @@ func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transac
 		return nil, err
 	}
 
+	to := ""
+	if resp.To() != nil {
+		to = resp.To().String()
+	}
+
 	ret := &am.Transaction{
 		BlockHash: receipt.BlockHash.String(),
 		Hash:      resp.Hash().String(),
 		From:      msg.From().String(),
-		To:        resp.To().String(),
+		To:        to,
 		Nonce:     resp.Nonce(),
 		Data:      common.Bytes2Hex(resp.Data()),
 		Value:     resp.Value().String(),
@@ -76,6 +86,39 @@ func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transac
 	}
 
 	return ret, nil
+}
+
+func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := "insert into txns (hash, `from`, `to`, block_hash) values (:hash, :from, :to, :block_hash)"
+
+	_, err := i.rw.NamedExecContext(timeout, stmt, newTransaction(tx))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *impl) GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error) {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	stmt := "select hash, `from`, `to`, block_hash from txns where hash = ?"
+
+	var resp transaction
+	err = i.rw.GetContext(timeout, &resp, stmt, hash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return resp.ToEntity(), nil
 }
 
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {

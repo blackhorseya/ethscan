@@ -8,6 +8,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 )
@@ -22,8 +24,11 @@ type suiteTester struct {
 func (s *suiteTester) SetupTest() {
 	s.logger, _ = zap.NewDevelopment()
 
+	db, rw, _ := sqlmock.New(sqlmock.MonitorPingsOption(true))
+	s.rw = rw
+
 	opts := &NodeOptions{BaseURL: "http://localhost", Timeout: 5 * time.Second}
-	s.repo, _ = CreateRepo(opts)
+	s.repo, _ = CreateRepo(opts, sqlx.NewDb(db, "mysql"))
 }
 
 func (s *suiteTester) assertExpectation(t *testing.T) {
@@ -68,6 +73,108 @@ func (s *suiteTester) Test_impl_FetchTxByHash() {
 			if !reflect.DeepEqual(gotTx, tt.wantTx) {
 				t.Errorf("FetchTxByHash() gotTx = %v, want %v", gotTx, tt.wantTx)
 			}
+		})
+	}
+}
+
+func (s *suiteTester) Test_impl_CreateTx() {
+	type args struct {
+		tx   *am.Transaction
+		mock func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "create then error",
+			args: args{tx: &am.Transaction{Hash: "0x0"}, mock: func() {
+				s.rw.ExpectExec(`insert into txns`).WillReturnError(errors.New("error"))
+			}},
+			wantErr: true,
+		},
+		{
+			name: "create then ok",
+			args: args{tx: &am.Transaction{Hash: "0x0"}, mock: func() {
+				s.rw.ExpectExec(`insert into txns`).WillReturnResult(sqlmock.NewResult(1, 1))
+			}},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			if err := s.repo.CreateTx(contextx.BackgroundWithLogger(s.logger), tt.args.tx); (err != nil) != tt.wantErr {
+				t.Errorf("CreateTx() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}
+
+func (s *suiteTester) Test_impl_GetTxByHash() {
+	type args struct {
+		hash string
+		mock func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantTx  *am.Transaction
+		wantErr bool
+	}{
+		{
+			name: "get tx then error",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").WillReturnError(errors.New("error"))
+			}},
+			wantTx:  nil,
+			wantErr: true,
+		},
+		{
+			name: "get tx then not found",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").
+					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}))
+			}},
+			wantTx:  nil,
+			wantErr: false,
+		},
+		{
+			name: "ok",
+			args: args{hash: "0x0", mock: func() {
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+					WithArgs("0x0").
+					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}).
+						AddRow("0x0", "", "", ""))
+			}},
+			wantTx:  &am.Transaction{Hash: "0x0"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotTx, err := s.repo.GetTxByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetTxByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotTx, tt.wantTx) {
+				t.Errorf("GetTxByHash() gotTx = %v, want %v", gotTx, tt.wantTx)
+			}
+
+			s.assertExpectation(t)
 		})
 	}
 }

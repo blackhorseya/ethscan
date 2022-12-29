@@ -49,7 +49,7 @@ func (s *suiteTester) Test_impl_GetByHash() {
 		{
 			name: "get by hash then error",
 			args: args{hash: "0x0", mock: func() {
-				s.repo.On("FetchTxByHash", mock.Anything, "0x0").Return(nil, errors.New("error")).Once()
+				s.repo.On("GetTxByHash", mock.Anything, "0x0").Return(nil, errors.New("error")).Once()
 			}},
 			wantTx:  nil,
 			wantErr: true,
@@ -57,7 +57,7 @@ func (s *suiteTester) Test_impl_GetByHash() {
 		{
 			name: "ok",
 			args: args{hash: "0x0", mock: func() {
-				s.repo.On("FetchTxByHash", mock.Anything, "0x0").Return(nil, nil).Once()
+				s.repo.On("GetTxByHash", mock.Anything, "0x0").Return(nil, nil).Once()
 			}},
 			wantTx:  nil,
 			wantErr: false,

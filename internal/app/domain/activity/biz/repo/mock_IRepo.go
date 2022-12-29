@@ -14,8 +14,45 @@ type MockIRepo struct {
 	mock.Mock
 }
 
+// CreateTx provides a mock function with given fields: ctx, tx
+func (_m *MockIRepo) CreateTx(ctx contextx.Contextx, tx *model.Transaction) error {
+	ret := _m.Called(ctx, tx)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, *model.Transaction) error); ok {
+		r0 = rf(ctx, tx)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // FetchTxByHash provides a mock function with given fields: ctx, hash
 func (_m *MockIRepo) FetchTxByHash(ctx contextx.Contextx, hash string) (*model.Transaction, error) {
+	ret := _m.Called(ctx, hash)
+
+	var r0 *model.Transaction
+	if rf, ok := ret.Get(0).(func(contextx.Contextx, string) *model.Transaction); ok {
+		r0 = rf(ctx, hash)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Transaction)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(contextx.Contextx, string) error); ok {
+		r1 = rf(ctx, hash)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTxByHash provides a mock function with given fields: ctx, hash
+func (_m *MockIRepo) GetTxByHash(ctx contextx.Contextx, hash string) (*model.Transaction, error) {
 	ret := _m.Called(ctx, hash)
 
 	var r0 *model.Transaction

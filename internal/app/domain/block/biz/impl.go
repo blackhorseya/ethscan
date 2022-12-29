@@ -3,14 +3,12 @@ package biz
 import (
 	"fmt"
 	"sync/atomic"
-	"time"
 
 	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 )
@@ -106,6 +104,8 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 				}
 			}()
 
+			ctx := contextx.BackgroundWithLogger(ctx.GetLogger())
+
 			record, err := i.repo.FetchRecordByHeight(ctx, height)
 			if err != nil {
 				ctx.Error(errorx.ErrFetchRecord.LogMessage, zap.Error(err), zap.Uint64("height", height))
@@ -121,17 +121,9 @@ func (i *impl) ScanBlock(ctx contextx.Contextx, start uint64) (last uint64, prog
 			}
 
 			if exists == nil {
-				delivery := make(chan kafka.Event)
-				defer close(delivery)
-				err = i.repo.ProduceRecord(ctx, record, delivery)
+				err = i.repo.ProduceRecord(ctx, record, nil)
 				if err != nil {
 					ctx.Error(errorx.ErrProduceRecord.LogMessage, zap.Error(err), zap.Any("record", record))
-					return
-				}
-				select {
-				case e := <-delivery:
-					ctx.Debug("send block record to kafka new_block", zap.String("event", e.String()))
-				case <-time.After(5 * time.Second):
 					return
 				}
 

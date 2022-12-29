@@ -25,12 +25,12 @@ func newBlockRecord(record *bm.BlockRecord) *blockRecord {
 
 func (b *blockRecord) ToEntity() *bm.BlockRecord {
 	return &bm.BlockRecord{
-		Height:         b.Height,
-		Hash:           b.Hash,
-		ParentHash:     b.ParentHash,
-		TransactionIds: nil,
-		Timestamp:      timestamppb.New(b.Timestamp),
-		Depth:          0,
-		Status:         0,
+		Height:       b.Height,
+		Hash:         b.Hash,
+		ParentHash:   b.ParentHash,
+		Transactions: nil,
+		Timestamp:    timestamppb.New(b.Timestamp),
+		Depth:        0,
+		Status:       0,
 	}
 }
