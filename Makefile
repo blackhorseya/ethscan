@@ -98,6 +98,8 @@ gen-pb: ## generate protobuf messages and services
 gen-mocks: ## generate mocks code via mockery
 	@go generate -tags=wireinject -x ./...
 
+	@mockery --dir ./pkg/entity/domain/activity/model --all --inpackage
+
 .PHONY: update-package
 update-package: ## update package and commit
 	@go get -u ./...
