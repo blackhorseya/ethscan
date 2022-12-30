@@ -19,3 +19,15 @@ message Transaction {
   // @gotags: json:"logs,omitempty"
   repeated Event events = 7;
 }
+
+message ListTxnsByBlockHashRequest {
+  string hash = 1;
+}
+
+message ListTxnsByBlockHashResponse {
+  repeated Transaction transactions = 1;
+}
+
+service Service {
+  rpc ListTxnsByBlockHash(ListTxnsByBlockHashRequest) returns (ListTxnsByBlockHashResponse);
+}

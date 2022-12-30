@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"time"
 
 	"github.com/blackhorseya/ethscan/pkg/contextx"
@@ -119,6 +120,49 @@ func (i *impl) GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transacti
 	}
 
 	return resp.ToEntity(), nil
+}
+
+func (i *impl) ListTxns(ctx contextx.Contextx, cond ListTxnsCondition) (txns []*am.Transaction, err error) {
+	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
+	defer cancelFunc()
+
+	var conditions []string
+	var args []interface{}
+	query := []string{"select hash, `from`, `to`, block_hash from txns"}
+
+	if len(cond.BlockHash) > 0 {
+		conditions = append(conditions, "block_hash = ?")
+		args = append(args, cond.BlockHash)
+	}
+
+	if len(conditions) != 0 {
+		query = append(query, "where "+strings.Join(conditions, " and "))
+	}
+
+	if cond.Limit != 0 {
+		query = append(query, "limit ?")
+		args = append(args, cond.Limit)
+	}
+
+	if cond.Offset != 0 {
+		query = append(query, "offset ?")
+		args = append(args, cond.Offset)
+	}
+
+	stmt := strings.Join(query, " ")
+
+	var resp []*transaction
+	err = i.rw.SelectContext(timeout, &resp, stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret []*am.Transaction
+	for _, t := range resp {
+		ret = append(ret, t.ToEntity())
+	}
+
+	return ret, nil
 }
 
 func (i *impl) newContextxWithTimeout(ctx contextx.Contextx) (contextx.Contextx, context.CancelFunc) {

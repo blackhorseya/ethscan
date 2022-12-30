@@ -82,3 +82,51 @@ func (s *suiteTester) Test_impl_GetByHash() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_ListTxns() {
+	type args struct {
+		cond ab.ListTxnsCondition
+		mock func()
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantTxns []*am.Transaction
+		wantErr  bool
+	}{
+		{
+			name: "list then error",
+			args: args{cond: ab.ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
+				s.repo.On("ListTxns", mock.Anything, repo.ListTxnsCondition{BlockHash: "0x0"}).Return(nil, errors.New("error")).Once()
+			}},
+			wantTxns: nil,
+			wantErr:  true,
+		},
+		{
+			name: "ok",
+			args: args{cond: ab.ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
+				s.repo.On("ListTxns", mock.Anything, repo.ListTxnsCondition{BlockHash: "0x0"}).Return(nil, nil).Once()
+			}},
+			wantTxns: nil,
+			wantErr:  false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotTxns, err := s.biz.ListTxns(contextx.BackgroundWithLogger(s.logger), tt.args.cond)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListTxns() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotTxns, tt.wantTxns) {
+				t.Errorf("ListTxns() gotTxns = %v, want %v", gotTxns, tt.wantTxns)
+			}
+
+			s.assertExpectation(t)
+		})
+	}
+}
