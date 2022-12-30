@@ -7,7 +7,7 @@ type Restful interface {
 
 // Grpc grpc adapter
 type Grpc interface {
-	InitService() error
+	RegisterServer() error
 }
 
 // Kafka is a consumer adapters

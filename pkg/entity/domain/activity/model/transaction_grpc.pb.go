@@ -3,10 +3,11 @@
 package model
 
 import (
-	context "context"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
+	"context"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -14,84 +15,84 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ActivityServiceClient is the client API for ActivityService service.
+// ServiceClient is the client API for Service service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ActivityServiceClient interface {
+type ServiceClient interface {
 	ListTxnsByBlockHash(ctx context.Context, in *ListTxnsByBlockHashRequest, opts ...grpc.CallOption) (*ListTxnsByBlockHashResponse, error)
 }
 
-type activityServiceClient struct {
+type serviceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewActivityServiceClient(cc grpc.ClientConnInterface) ActivityServiceClient {
-	return &activityServiceClient{cc}
+func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
+	return &serviceClient{cc}
 }
 
-func (c *activityServiceClient) ListTxnsByBlockHash(ctx context.Context, in *ListTxnsByBlockHashRequest, opts ...grpc.CallOption) (*ListTxnsByBlockHashResponse, error) {
+func (c *serviceClient) ListTxnsByBlockHash(ctx context.Context, in *ListTxnsByBlockHashRequest, opts ...grpc.CallOption) (*ListTxnsByBlockHashResponse, error) {
 	out := new(ListTxnsByBlockHashResponse)
-	err := c.cc.Invoke(ctx, "/activity.ActivityService/ListTxnsByBlockHash", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/activity.Service/ListTxnsByBlockHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ActivityServiceServer is the server API for ActivityService service.
-// All implementations should embed UnimplementedActivityServiceServer
+// ServiceServer is the server API for Service service.
+// All implementations should embed UnimplementedServiceServer
 // for forward compatibility
-type ActivityServiceServer interface {
+type ServiceServer interface {
 	ListTxnsByBlockHash(context.Context, *ListTxnsByBlockHashRequest) (*ListTxnsByBlockHashResponse, error)
 }
 
-// UnimplementedActivityServiceServer should be embedded to have forward compatible implementations.
-type UnimplementedActivityServiceServer struct {
+// UnimplementedServiceServer should be embedded to have forward compatible implementations.
+type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedActivityServiceServer) ListTxnsByBlockHash(context.Context, *ListTxnsByBlockHashRequest) (*ListTxnsByBlockHashResponse, error) {
+func (UnimplementedServiceServer) ListTxnsByBlockHash(context.Context, *ListTxnsByBlockHashRequest) (*ListTxnsByBlockHashResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTxnsByBlockHash not implemented")
 }
 
-// UnsafeActivityServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ActivityServiceServer will
+// UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ServiceServer will
 // result in compilation errors.
-type UnsafeActivityServiceServer interface {
-	mustEmbedUnimplementedActivityServiceServer()
+type UnsafeServiceServer interface {
+	mustEmbedUnimplementedServiceServer()
 }
 
-func RegisterActivityServiceServer(s grpc.ServiceRegistrar, srv ActivityServiceServer) {
-	s.RegisterService(&ActivityService_ServiceDesc, srv)
+func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
+	s.RegisterService(&Service_ServiceDesc, srv)
 }
 
-func _ActivityService_ListTxnsByBlockHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_ListTxnsByBlockHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListTxnsByBlockHashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActivityServiceServer).ListTxnsByBlockHash(ctx, in)
+		return srv.(ServiceServer).ListTxnsByBlockHash(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/activity.ActivityService/ListTxnsByBlockHash",
+		FullMethod: "/activity.Service/ListTxnsByBlockHash",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServiceServer).ListTxnsByBlockHash(ctx, req.(*ListTxnsByBlockHashRequest))
+		return srv.(ServiceServer).ListTxnsByBlockHash(ctx, req.(*ListTxnsByBlockHashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ActivityService_ServiceDesc is the grpc.ServiceDesc for ActivityService service.
+// Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ActivityService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "activity.ActivityService",
-	HandlerType: (*ActivityServiceServer)(nil),
+var Service_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "activity.Service",
+	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "ListTxnsByBlockHash",
-			Handler:    _ActivityService_ListTxnsByBlockHash_Handler,
+			Handler:    _Service_ListTxnsByBlockHash_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

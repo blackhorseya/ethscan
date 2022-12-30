@@ -19,7 +19,7 @@ type service struct {
 
 // NewService serve caller to create service instance
 func NewService(logger *zap.Logger, gs grpcx.Server, grpc adapters.Grpc) (app.Service, error) {
-	err := grpc.InitService()
+	err := grpc.RegisterServer()
 	if err != nil {
 		return nil, errors.Wrap(err, "init service error")
 	}

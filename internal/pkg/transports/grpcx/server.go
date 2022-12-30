@@ -35,15 +35,7 @@ func NewServerOptions(v *viper.Viper) (*ServerOptions, error) {
 	return opts, nil
 }
 
-type server struct {
-	logger *zap.Logger
-
-	host       string
-	port       int
-	grpcserver *grpc.Server
-}
-
-func NewServer(opts *ServerOptions, logger *zap.Logger) grpcx.Server {
+func NewRouter(logger *zap.Logger) *grpc.Server {
 	stream := grpc.StreamInterceptor(
 		grpc_middleware.ChainStreamServer(
 			grpc_ctxtags.StreamServerInterceptor(),
@@ -60,8 +52,19 @@ func NewServer(opts *ServerOptions, logger *zap.Logger) grpcx.Server {
 			contextx.UnaryServerInterceptor(logger),
 		),
 	)
-	gs := grpc.NewServer(stream, unary)
 
+	return grpc.NewServer(stream, unary)
+}
+
+type server struct {
+	logger *zap.Logger
+
+	host       string
+	port       int
+	grpcserver *grpc.Server
+}
+
+func NewServer(opts *ServerOptions, logger *zap.Logger, gs *grpc.Server) grpcx.Server {
 	return &server{
 		logger:     logger,
 		host:       opts.Host,
@@ -108,4 +111,4 @@ func (s *server) Stop() error {
 	return nil
 }
 
-var ProviderServer = wire.NewSet(NewServerOptions, NewServer)
+var ProviderServer = wire.NewSet(NewServerOptions, NewServer, NewRouter)

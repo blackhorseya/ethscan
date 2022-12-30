@@ -28,6 +28,6 @@ message ListTxnsByBlockHashResponse {
   repeated Transaction transactions = 1;
 }
 
-service ActivityService {
+service Service {
   rpc ListTxnsByBlockHash(ListTxnsByBlockHashRequest) returns (ListTxnsByBlockHashResponse);
 }
