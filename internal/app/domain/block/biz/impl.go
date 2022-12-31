@@ -7,6 +7,7 @@ import (
 	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
+	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
@@ -34,8 +35,36 @@ func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRe
 		ctx.Error(errorx.ErrGetRecord.LogMessage, zap.Error(err), zap.String("hash", hash))
 		return nil, errorx.ErrGetRecord
 	}
+	if ret == nil {
+		return nil, nil
+	}
 
-	// todo: 2022/12/23|sean|get txns id by hash of block from activity grpc
+	resp, err := i.activity.ListTxnsByBlockHash(ctx, &am.ListTxnsByBlockHashRequest{Hash: hash})
+	if err != nil {
+		ctx.Error(errorx.ErrGetTx.LogMessage, zap.Error(err), zap.String("hash", hash))
+		return ret, nil
+	}
+
+	for _, tx := range resp.Transactions {
+		var events []*bm.Event
+		for _, event := range tx.Events {
+			events = append(events, &bm.Event{
+				Index: event.Index,
+				Data:  event.Data,
+			})
+		}
+
+		ret.Transactions = append(ret.Transactions, &bm.Transaction{
+			BlockHash: tx.BlockHash,
+			Hash:      tx.Hash,
+			From:      tx.From,
+			To:        tx.To,
+			Nonce:     tx.Nonce,
+			Data:      tx.Data,
+			Value:     tx.Value,
+			Events:    events,
+		})
+	}
 
 	return ret, nil
 }

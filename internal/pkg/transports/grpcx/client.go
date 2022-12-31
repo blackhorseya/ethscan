@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type ClientOptions struct {
@@ -44,7 +45,7 @@ func (c *client) Dial(service string) (*grpc.ClientConn, error) {
 		return nil, fmt.Errorf("cannot find service name: %s", service)
 	}
 
-	conn, err := grpc.DialContext(ctx, target)
+	conn, err := grpc.DialContext(ctx, target, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, errors.Wrap(err, "grpc client dial error")
 	}

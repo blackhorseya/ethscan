@@ -6,6 +6,7 @@ import (
 
 	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
+	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
@@ -58,9 +59,22 @@ func (s *suiteTester) Test_impl_GetByHash() {
 			wantErr:    true,
 		},
 		{
+			name: "list txns by block hash then ok",
+			args: args{hash: "hash", mock: func() {
+				s.repo.On("GetRecordByHash", mock.Anything, "hash").Return(&bm.BlockRecord{Hash: "hash"}, nil).Once()
+
+				s.activity.On("ListTxnsByBlockHash", mock.Anything, &model.ListTxnsByBlockHashRequest{Hash: "hash"}).Return(nil, errors.New("error")).Once()
+			}},
+			wantRecord: &bm.BlockRecord{Hash: "hash"},
+			wantErr:    false,
+		},
+		{
 			name: "ok",
 			args: args{hash: "hash", mock: func() {
 				s.repo.On("GetRecordByHash", mock.Anything, "hash").Return(&bm.BlockRecord{Hash: "hash"}, nil).Once()
+
+				s.activity.On("ListTxnsByBlockHash", mock.Anything, &model.ListTxnsByBlockHashRequest{Hash: "hash"}).
+					Return(&model.ListTxnsByBlockHashResponse{}, nil).Once()
 			}},
 			wantRecord: &bm.BlockRecord{Hash: "hash"},
 			wantErr:    false,
