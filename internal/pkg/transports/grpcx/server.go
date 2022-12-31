@@ -17,8 +17,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// todo: 2022/12/30|sean|breakpoint: implement grpc grpcserver return grpx grpcserver
-
 type ServerOptions struct {
 	Host string `json:"host" yaml:"host"`
 	Port int    `json:"port" yaml:"port"`

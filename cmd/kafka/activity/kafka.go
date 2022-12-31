@@ -77,7 +77,6 @@ func (i *impl) subscribe() {
 
 				ctx := contextx.BackgroundWithLogger(i.logger)
 
-				// todo: 2022/12/29|sean|breakpoint: wait handle new block
 				_, err = i.biz.HandleNewBlock(ctx, newBlock)
 				if err != nil {
 					i.logger.Error("handle new block error", zap.Error(err), zap.Any("new_block", newBlock))
