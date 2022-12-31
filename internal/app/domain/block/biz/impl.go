@@ -7,20 +7,25 @@ import (
 	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
+	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 )
 
-var ProviderSet = wire.NewSet(repo.ProviderSet, NewImpl)
+var ProviderSet = wire.NewSet(repo.ProviderSet, NewImpl, NewActivityClient)
 
 type impl struct {
-	repo repo.IRepo
+	repo     repo.IRepo
+	activity s2s.ServiceClient
 }
 
-func NewImpl(repo repo.IRepo) bb.IBiz {
-	return &impl{repo: repo}
+func NewImpl(repo repo.IRepo, activity s2s.ServiceClient) bb.IBiz {
+	return &impl{
+		repo:     repo,
+		activity: activity,
+	}
 }
 
 func (i *impl) GetByHash(ctx contextx.Contextx, hash string) (record *bm.BlockRecord, err error) {

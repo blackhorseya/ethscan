@@ -8,6 +8,7 @@ import (
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/ethscan/internal/pkg/transports/grpcx"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
 	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
@@ -23,6 +24,7 @@ var providerSet = wire.NewSet(
 
 	// transports
 	kafka.ProviderProducer,
+	grpcx.ProviderClient,
 
 	// implementation
 	biz.ProviderSet,

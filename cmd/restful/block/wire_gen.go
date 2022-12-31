@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/ethscan/internal/pkg/transports/grpcx"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/httpx"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
 	"github.com/blackhorseya/ethscan/pkg/app"
@@ -63,7 +64,16 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iBiz := biz.NewImpl(iRepo)
+	clientOptions, err := grpcx.NewClientOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	client := grpcx.NewClient(clientOptions)
+	serviceClient, err := biz.NewActivityClient(client)
+	if err != nil {
+		return nil, err
+	}
+	iBiz := biz.NewImpl(iRepo, serviceClient)
 	adaptersRestful := NewRestful(logger, engine, iBiz)
 	appService, err := NewService(logger, server, adaptersRestful)
 	if err != nil {
@@ -74,6 +84,6 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, kafka.ProviderProducer, biz.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, kafka.ProviderProducer, grpcx.ProviderClient, biz.ProviderSet, NewService,
 	NewRestful,
 )
