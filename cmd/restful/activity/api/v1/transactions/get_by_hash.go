@@ -5,6 +5,7 @@ import (
 
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
+	_ "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model" // import struct
 	"github.com/blackhorseya/ethscan/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ type getByHashRequest struct {
 // @Accept json
 // @Produce json
 // @Param hash path string true "hash"
-// @Success 200 {object} response.Response{data=model.Transaction}
+// @Success 200 {object} response.Response
 // @Success 500 {object} er.Error
 // @Router /v1/transactions/{hash} [get]
 func (i *impl) GetByHash(c *gin.Context) {

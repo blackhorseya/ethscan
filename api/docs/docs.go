@@ -65,7 +65,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse"
+                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.listResponse"
                                         }
                                     }
                                 }
@@ -157,19 +157,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.Transaction"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "500": {
@@ -247,7 +235,7 @@ const docTemplate = `{
                     "description": "@gotags: json:\"transactions,omitempty\"",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/pkg_entity_domain_block_model.Transaction"
                     }
                 }
             }
@@ -267,7 +255,7 @@ const docTemplate = `{
                 "BlockStatus_BLOCK_STATUS_REORG"
             ]
         },
-        "model.Event": {
+        "pkg_entity_domain_block_model.Event": {
             "type": "object",
             "properties": {
                 "data": {
@@ -278,7 +266,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Transaction": {
+        "pkg_entity_domain_block_model.Transaction": {
             "type": "object",
             "properties": {
                 "block_hash": {
@@ -294,7 +282,7 @@ const docTemplate = `{
                     "description": "@gotags: json:\"logs,omitempty\"",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Event"
+                        "$ref": "#/definitions/pkg_entity_domain_block_model.Event"
                     }
                 },
                 "nonce": {

@@ -43,7 +43,7 @@ definitions:
       transactions:
         description: '@gotags: json:"transactions,omitempty"'
         items:
-          type: string
+          $ref: '#/definitions/pkg_entity_domain_block_model.Transaction'
         type: array
     type: object
   model.BlockStatus:
@@ -58,14 +58,14 @@ definitions:
     - BlockStatus_BLOCK_STATUS_STABLE
     - BlockStatus_BLOCK_STATUS_UNSTABLE
     - BlockStatus_BLOCK_STATUS_REORG
-  model.Event:
+  pkg_entity_domain_block_model.Event:
     properties:
       data:
         type: string
       index:
         type: integer
     type: object
-  model.Transaction:
+  pkg_entity_domain_block_model.Transaction:
     properties:
       block_hash:
         type: string
@@ -76,7 +76,7 @@ definitions:
       logs:
         description: '@gotags: json:"logs,omitempty"'
         items:
-          $ref: '#/definitions/model.Event'
+          $ref: '#/definitions/pkg_entity_domain_block_model.Event'
         type: array
       nonce:
         type: integer
@@ -134,7 +134,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse'
+                  $ref: '#/definitions/cmd_restful_block_api_v1_blocks.listResponse'
               type: object
         "500":
           description: Internal Server Error
@@ -190,12 +190,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Transaction'
-              type: object
+            $ref: '#/definitions/response.Response'
         "500":
           description: Internal Server Error
           schema:
