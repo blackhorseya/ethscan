@@ -9,3 +9,5 @@ create table if not exists txns
   default charset = utf8mb4
   collate = utf8mb4_general_ci
     comment = 'transaction';
+
+create index idx_block_hash on txns (block_hash);
