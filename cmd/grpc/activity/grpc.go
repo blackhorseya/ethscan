@@ -8,6 +8,7 @@ import (
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
+	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -25,7 +26,7 @@ func NewGrpc(logger *zap.Logger, gs *grpc.Server, biz ab.IBiz) adapters.Grpc {
 }
 
 func (i *impl) RegisterServer() error {
-	am.RegisterServiceServer(i.gs, i)
+	s2s.RegisterServiceServer(i.gs, i)
 
 	return nil
 }
