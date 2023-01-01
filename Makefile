@@ -112,8 +112,8 @@ migrate-up: check-SVC_NAME ## run migration up
 	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) up
 
 .PHONY: migrate-down
-migrate-down: check-SVC_NAME ## run migration down
-	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) down
+migrate-down: check-SVC_NAME check-N ## run migration down
+	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) down $(N)
 
 .PHONY: deploy
 deploy: check-SVC_NAME check-SVC_ADAPTER check-DEPLOY_TO ## deploy the application via helm 3
