@@ -19,8 +19,15 @@ func (x *blockResponse) MarshalJSON() ([]byte, error) {
 	type Alias model.BlockRecord
 
 	var txns []string
-	for _, tx := range x.Block.Transactions {
-		txns = append(txns, tx.Hash)
+	if x.Block != nil {
+		for _, tx := range x.Block.Transactions {
+			txns = append(txns, tx.Hash)
+		}
+	}
+
+	var timestamp int64
+	if x.Block != nil {
+		timestamp = x.Block.Timestamp.AsTime().UTC().Unix()
 	}
 
 	return json.Marshal(&struct {
@@ -29,7 +36,7 @@ func (x *blockResponse) MarshalJSON() ([]byte, error) {
 		Transactions []string `json:"transactions,omitempty"`
 	}{
 		Alias:        (*Alias)(x.Block),
-		BlockTime:    x.Block.Timestamp.AsTime().UTC().Unix(),
+		BlockTime:    timestamp,
 		Transactions: txns,
 	})
 }

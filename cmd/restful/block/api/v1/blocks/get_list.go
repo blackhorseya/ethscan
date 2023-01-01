@@ -10,6 +10,7 @@ import (
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/block/model" // import struct
 	"github.com/blackhorseya/ethscan/pkg/response"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type listResponse struct {
@@ -37,13 +38,15 @@ func (i *impl) List(c *gin.Context) {
 
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		_ = c.Error(err)
+		ctx.Error(errorx.ErrInvalidPage.LogMessage, zap.Error(err))
+		_ = c.Error(errorx.ErrInvalidPage)
 		return
 	}
 
 	size, err := strconv.Atoi(c.DefaultQuery("size", "10"))
 	if err != nil {
-		_ = c.Error(err)
+		ctx.Error(errorx.ErrInvalidSize.LogMessage, zap.Error(err))
+		_ = c.Error(errorx.ErrInvalidSize)
 		return
 	}
 
