@@ -17,7 +17,6 @@ message BlockRecord {
   // @gotags: json:"block_hash"
   string hash = 2;
   string parent_hash = 3;
-  // @gotags: json:"transactions,omitempty"
   repeated Transaction transactions = 4;
   // @gotags: json:"-"
   google.protobuf.Timestamp timestamp = 5;

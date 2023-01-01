@@ -115,7 +115,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.BlockRecord"
+                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.blockResponse"
                                         }
                                     }
                                 }
@@ -171,6 +171,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "cmd_restful_block_api_v1_blocks.blockResponse": {
+            "type": "object",
+            "properties": {
+                "block": {
+                    "$ref": "#/definitions/model.BlockRecord"
+                }
+            }
+        },
         "cmd_restful_block_api_v1_blocks.listResponse": {
             "type": "object",
             "properties": {
@@ -194,6 +202,14 @@ const docTemplate = `{
                 "data": {},
                 "msg": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.blockResponse": {
+            "type": "object",
+            "properties": {
+                "block": {
+                    "$ref": "#/definitions/model.BlockRecord"
                 }
             }
         },
