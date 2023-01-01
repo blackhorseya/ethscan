@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "e2e"
+name = "ethscan"
 version = "0.1.0"
 description = ""
 authors = ["Sean Zheng <blackhorseya@gmail.com>"]
