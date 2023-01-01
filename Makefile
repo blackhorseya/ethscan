@@ -45,7 +45,7 @@ test-smoke: ## execute smoke testing
 
 .PHONY: test-e2e
 test-e2e: ## execute e2e test
-	@cd ./test/e2e && npx playwright test ./tests
+	@pytest
 
 .PHONY: build-image
 build-image: check-SVC_NAME check-SVC_ADAPTER check-VERSION ## build docker image with APP_NAME and VERSION
