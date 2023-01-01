@@ -8,8 +8,6 @@ import (
 
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -51,51 +49,18 @@ func NewImpl(opts *NodeOptions, rw *sqlx.DB) (IRepo, error) {
 	}, nil
 }
 
-func (i *impl) FetchTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transaction, err error) {
-	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
-	defer cancelFunc()
-
-	h := common.HexToHash(hash)
-	resp, _, err := i.eth.TransactionByHash(timeout, h)
-	if err != nil {
-		return nil, err
-	}
-	msg, err := resp.AsMessage(types.LatestSignerForChainID(resp.ChainId()), nil)
-	if err != nil {
-		return nil, err
-	}
-	receipt, err := i.eth.TransactionReceipt(timeout, h)
-	if err != nil {
-		return nil, err
-	}
-
-	to := ""
-	if resp.To() != nil {
-		to = resp.To().String()
-	}
-
-	ret := &am.Transaction{
-		BlockHash: receipt.BlockHash.String(),
-		Hash:      resp.Hash().String(),
-		From:      msg.From().String(),
-		To:        to,
-		Nonce:     resp.Nonce(),
-		Data:      common.Bytes2Hex(resp.Data()),
-		Value:     resp.Value().String(),
-		// todo: 2022/12/23|sean|fill the event log
-		Events: nil,
-	}
-
-	return ret, nil
-}
-
 func (i *impl) CreateTx(ctx contextx.Contextx, tx *am.Transaction) error {
 	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
 	defer cancelFunc()
 
-	stmt := "insert into txns (hash, `from`, `to`, block_hash) values (:hash, :from, :to, :block_hash)"
+	stmt := "insert into txns (hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events) values (:hash, :from, :to, :block_hash, :timestamp, :nonce, :data, :value, :events)"
 
-	_, err := i.rw.NamedExecContext(timeout, stmt, newTransaction(tx))
+	arg, err := newTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	_, err = i.rw.NamedExecContext(timeout, stmt, arg)
 	if err != nil {
 		return err
 	}
@@ -107,7 +72,7 @@ func (i *impl) GetTxByHash(ctx contextx.Contextx, hash string) (tx *am.Transacti
 	timeout, cancelFunc := i.newContextxWithTimeout(ctx)
 	defer cancelFunc()
 
-	stmt := "select hash, `from`, `to`, block_hash from txns where hash = ?"
+	stmt := "select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns where hash = ?"
 
 	var resp transaction
 	err = i.rw.GetContext(timeout, &resp, stmt, hash)
@@ -128,7 +93,7 @@ func (i *impl) ListTxns(ctx contextx.Contextx, cond ListTxnsCondition) (txns []*
 
 	var conditions []string
 	var args []interface{}
-	query := []string{"select hash, `from`, `to`, block_hash from txns"}
+	query := []string{"select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns"}
 
 	if len(cond.BlockHash) > 0 {
 		conditions = append(conditions, "block_hash = ?")

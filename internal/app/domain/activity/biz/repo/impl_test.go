@@ -45,42 +45,6 @@ func TestAll(t *testing.T) {
 	suite.Run(t, new(suiteTester))
 }
 
-func (s *suiteTester) Test_impl_FetchTxByHash() {
-	type args struct {
-		hash string
-		mock func()
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantTx  *am.Transaction
-		wantErr bool
-	}{
-		{
-			name:    "error",
-			args:    args{hash: "0x38ae61626a91062204dc634319db690b48e72af453e6ff78d1866b61d41d24be"},
-			wantTx:  nil,
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		s.T().Run(tt.name, func(t *testing.T) {
-			if tt.args.mock != nil {
-				tt.args.mock()
-			}
-
-			gotTx, err := s.repo.FetchTxByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("FetchTxByHash() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(gotTx, tt.wantTx) {
-				t.Errorf("FetchTxByHash() gotTx = %v, want %v", gotTx, tt.wantTx)
-			}
-		})
-	}
-}
-
 func (s *suiteTester) Test_impl_CreateTx() {
 	type args struct {
 		tx   *am.Transaction
@@ -135,7 +99,7 @@ func (s *suiteTester) Test_impl_GetTxByHash() {
 		{
 			name: "get tx then error",
 			args: args{hash: "0x0", mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").WillReturnError(errors.New("error"))
 			}},
 			wantTx:  nil,
@@ -144,7 +108,7 @@ func (s *suiteTester) Test_impl_GetTxByHash() {
 		{
 			name: "get tx then not found",
 			args: args{hash: "0x0", mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").
 					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}))
 			}},
@@ -154,7 +118,7 @@ func (s *suiteTester) Test_impl_GetTxByHash() {
 		{
 			name: "ok",
 			args: args{hash: "0x0", mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").
 					WillReturnRows(sqlmock.NewRows([]string{"hash", "from", "to", "block_hash"}).
 						AddRow("0x0", "", "", ""))
@@ -197,7 +161,7 @@ func (s *suiteTester) Test_impl_ListTxns() {
 		{
 			name: "list then error",
 			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").WillReturnError(errors.New("error"))
 			}},
 			wantTxns: nil,
@@ -206,7 +170,7 @@ func (s *suiteTester) Test_impl_ListTxns() {
 		{
 			name: "list then not found",
 			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").WillReturnRows(sqlmock.NewRows(columns))
 			}},
 			wantTxns: nil,
@@ -215,7 +179,7 @@ func (s *suiteTester) Test_impl_ListTxns() {
 		{
 			name: "ok",
 			args: args{cond: ListTxnsCondition{BlockHash: "0x0"}, mock: func() {
-				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash from txns").
+				s.rw.ExpectQuery("select hash, `from`, `to`, block_hash, timestamp, nonce, data, value, events from txns").
 					WithArgs("0x0").WillReturnRows(sqlmock.NewRows(columns).AddRow(
 					"",
 					"",
