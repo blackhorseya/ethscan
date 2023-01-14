@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var ProviderSet = wire.NewSet(repo.ProviderSet, NewImpl, NewActivityClient)
+var BlockSet = wire.NewSet(repo.ProviderSet, NewImpl, NewActivityClient)
 
 type impl struct {
 	repo     repo.IRepo

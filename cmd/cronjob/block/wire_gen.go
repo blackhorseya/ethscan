@@ -81,7 +81,7 @@ func CreateService(path2 string, initHeight2 uint64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderProducer, grpcx.ProviderClient, biz.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderProducer, grpcx.ProviderClient, biz.BlockSet, NewService,
 	NewCronjobOptions,
 	NewCronjob,
 )

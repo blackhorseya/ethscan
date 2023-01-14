@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/blackhorseya/ethscan/cmd/restful/block/api/v1/blocks"
+	"github.com/blackhorseya/ethscan/internal/adapter/block/restful/api/v1/blocks"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/gin-gonic/gin"
 )

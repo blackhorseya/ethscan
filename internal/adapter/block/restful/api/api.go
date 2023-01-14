@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	_ "github.com/blackhorseya/ethscan/api/docs" // import swagger spec
-	v1 "github.com/blackhorseya/ethscan/cmd/restful/block/api/v1"
+	"github.com/blackhorseya/ethscan/internal/adapter/block/restful/api/v1"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
@@ -18,7 +18,7 @@ type impl struct {
 }
 
 func Handle(g *gin.RouterGroup, biz bb.IBiz) {
-	g.GET("ethscan/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	g.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	i := &impl{}
 

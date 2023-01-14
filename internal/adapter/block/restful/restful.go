@@ -1,15 +1,16 @@
-package main
+package restful
 
 import (
 	"time"
 
-	"github.com/blackhorseya/ethscan/cmd/restful/block/api"
+	"github.com/blackhorseya/ethscan/internal/adapter/block/restful/api"
 	"github.com/blackhorseya/ethscan/pkg/adapters"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/blackhorseya/ethscan/pkg/er"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +26,6 @@ func NewRestful(logger *zap.Logger, router *gin.Engine, biz bb.IBiz) adapters.Re
 		UTC:        true,
 		SkipPaths:  []string{"/api/readiness", "/api/liveness"},
 	}))
-
 	router.Use(contextx.AddContextxWitLoggerMiddleware(logger))
 	router.Use(er.AddErrorHandlingMiddleware())
 
@@ -37,3 +37,5 @@ func (r *restful) InitRouting() error {
 
 	return nil
 }
+
+var BlockSet = wire.NewSet(NewRestful)

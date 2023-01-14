@@ -27,7 +27,7 @@ var providerSet = wire.NewSet(
 	grpcx.ProviderClient,
 
 	// implementation
-	biz.ProviderSet,
+	biz.BlockSet,
 
 	// main
 	NewService,

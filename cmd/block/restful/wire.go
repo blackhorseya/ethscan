@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/blackhorseya/ethscan/internal/adapter/block/restful"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
@@ -29,11 +30,11 @@ var providerSet = wire.NewSet(
 	grpcx.ProviderClient,
 
 	// implementation
-	biz.ProviderSet,
+	restful.BlockSet,
+	biz.BlockSet,
 
 	// main
 	NewService,
-	NewRestful,
 )
 
 func CreateService(path string, id int64) (app.Service, error) {
