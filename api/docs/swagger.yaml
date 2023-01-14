@@ -1,11 +1,11 @@
 basePath: /api
 definitions:
-  cmd_restful_block_api_v1_blocks.blockResponse:
+  blocks.blockResponse:
     properties:
       block:
         $ref: '#/definitions/model.BlockRecord'
     type: object
-  cmd_restful_block_api_v1_blocks.listResponse:
+  blocks.listResponse:
     properties:
       list:
         items:
@@ -21,20 +21,6 @@ definitions:
       data: {}
       msg:
         type: string
-    type: object
-  github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.blockResponse:
-    properties:
-      block:
-        $ref: '#/definitions/model.BlockRecord'
-    type: object
-  github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse:
-    properties:
-      list:
-        items:
-          $ref: '#/definitions/model.BlockRecord'
-        type: array
-      total:
-        type: integer
     type: object
   model.BlockRecord:
     properties:
@@ -144,7 +130,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/cmd_restful_block_api_v1_blocks.listResponse'
+                  $ref: '#/definitions/blocks.listResponse'
               type: object
         "500":
           description: Internal Server Error
@@ -174,7 +160,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/cmd_restful_block_api_v1_blocks.blockResponse'
+                  $ref: '#/definitions/blocks.blockResponse'
               type: object
         "500":
           description: Internal Server Error

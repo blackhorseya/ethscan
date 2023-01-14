@@ -65,7 +65,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.listResponse"
+                                            "$ref": "#/definitions/blocks.listResponse"
                                         }
                                     }
                                 }
@@ -115,7 +115,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/cmd_restful_block_api_v1_blocks.blockResponse"
+                                            "$ref": "#/definitions/blocks.blockResponse"
                                         }
                                     }
                                 }
@@ -171,7 +171,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "cmd_restful_block_api_v1_blocks.blockResponse": {
+        "blocks.blockResponse": {
             "type": "object",
             "properties": {
                 "block": {
@@ -179,7 +179,7 @@ const docTemplate = `{
                 }
             }
         },
-        "cmd_restful_block_api_v1_blocks.listResponse": {
+        "blocks.listResponse": {
             "type": "object",
             "properties": {
                 "list": {
@@ -202,28 +202,6 @@ const docTemplate = `{
                 "data": {},
                 "msg": {
                     "type": "string"
-                }
-            }
-        },
-        "github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.blockResponse": {
-            "type": "object",
-            "properties": {
-                "block": {
-                    "$ref": "#/definitions/model.BlockRecord"
-                }
-            }
-        },
-        "github_com_blackhorseya_ethscan_cmd_restful_block_api_v1_blocks.listResponse": {
-            "type": "object",
-            "properties": {
-                "list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BlockRecord"
-                    }
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },
