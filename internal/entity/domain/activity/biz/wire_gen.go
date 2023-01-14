@@ -7,7 +7,7 @@
 package biz
 
 import (
-	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz/repo"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	"github.com/google/wire"
 )

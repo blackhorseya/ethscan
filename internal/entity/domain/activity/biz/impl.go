@@ -1,7 +1,7 @@
 package biz
 
 import (
-	"github.com/blackhorseya/ethscan/internal/app/domain/activity/biz/repo"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"

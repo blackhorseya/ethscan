@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"

@@ -4,7 +4,7 @@
 package biz
 
 import (
-	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz/repo"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/google/wire"

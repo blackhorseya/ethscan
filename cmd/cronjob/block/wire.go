@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/blackhorseya/ethscan/internal/app/domain/block/biz"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
