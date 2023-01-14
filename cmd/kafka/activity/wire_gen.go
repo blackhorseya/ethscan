@@ -67,6 +67,6 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderConsumer, biz.ProviderSet, NewService,
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderConsumer, biz.ActivitySet, NewService,
 	NewKafka,
 )

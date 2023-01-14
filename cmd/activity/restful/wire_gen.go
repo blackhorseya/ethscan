@@ -7,6 +7,7 @@
 package main
 
 import (
+	"github.com/blackhorseya/ethscan/internal/adapter/activity/restful"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
@@ -55,7 +56,7 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 		return nil, err
 	}
 	iBiz := biz.NewImpl(iRepo)
-	adaptersRestful := NewRestful(logger, engine, iBiz)
+	adaptersRestful := restful.NewRestful(logger, engine, iBiz)
 	appService, err := NewService(logger, server, adaptersRestful)
 	if err != nil {
 		return nil, err
@@ -65,6 +66,4 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, biz.ProviderSet, NewService,
-	NewRestful,
-)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, httpx.ProviderServerSet, restful.ActivitySet, biz.ActivitySet, NewService)

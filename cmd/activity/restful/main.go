@@ -4,7 +4,7 @@ import (
 	"flag"
 )
 
-var path = flag.String("c", "./configs/restful/activity/local.yaml", "set config file path")
+var path = flag.String("c", "./configs/activity/restful/local.yaml", "set config file path")
 
 func init() {
 	flag.Parse()

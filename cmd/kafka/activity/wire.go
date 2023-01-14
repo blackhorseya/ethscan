@@ -25,7 +25,7 @@ var providerSet = wire.NewSet(
 	kafka.ProviderConsumer,
 
 	// implementation
-	biz.ProviderSet,
+	biz.ActivitySet,
 
 	// main
 	NewService,

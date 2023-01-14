@@ -1,15 +1,16 @@
-package main
+package restful
 
 import (
 	"time"
 
-	"github.com/blackhorseya/ethscan/cmd/restful/activity/api"
+	"github.com/blackhorseya/ethscan/internal/adapter/activity/restful/api"
 	"github.com/blackhorseya/ethscan/pkg/adapters"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	"github.com/blackhorseya/ethscan/pkg/er"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 )
 
@@ -37,3 +38,5 @@ func (r *restful) InitRouting() error {
 
 	return nil
 }
+
+var ActivitySet = wire.NewSet(NewRestful)

@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/blackhorseya/ethscan/cmd/restful/activity/api/v1/transactions"
+	"github.com/blackhorseya/ethscan/internal/adapter/activity/restful/api/v1/transactions"
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	"github.com/gin-gonic/gin"
 )
