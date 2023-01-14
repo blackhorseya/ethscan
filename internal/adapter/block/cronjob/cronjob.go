@@ -1,4 +1,4 @@
-package main
+package cronjob
 
 import (
 	"fmt"
@@ -7,10 +7,13 @@ import (
 	"github.com/blackhorseya/ethscan/pkg/adapters"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
+
+var BlockSet = wire.NewSet(NewCronjobOptions, NewCronjob)
 
 // Options declare cronjob configuration
 type Options struct {

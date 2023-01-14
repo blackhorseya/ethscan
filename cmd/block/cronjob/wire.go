@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/blackhorseya/ethscan/internal/adapter/block/cronjob"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
@@ -27,12 +28,11 @@ var providerSet = wire.NewSet(
 	grpcx.ProviderClient,
 
 	// implementation
+	cronjob.BlockSet,
 	biz.BlockSet,
 
 	// main
 	NewService,
-	NewCronjobOptions,
-	NewCronjob,
 )
 
 func CreateService(path string, initHeight uint64) (app.Service, error) {

@@ -4,18 +4,14 @@ import (
 	"flag"
 )
 
-var (
-	path = flag.String("c", "./configs/cronjob/block/local.yaml", "set config file path")
-
-	initHeight = flag.Uint64("init-height", 16283079, "set init height for start")
-)
+var path = flag.String("c", "./configs/activity/grpc/local.yaml", "set config file path")
 
 func init() {
 	flag.Parse()
 }
 
 func main() {
-	svc, err := CreateService(*path, *initHeight)
+	svc, err := CreateService(*path, 1)
 	if err != nil {
 		panic(err)
 	}

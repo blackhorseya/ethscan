@@ -1,4 +1,4 @@
-package main
+package grpc
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -50,3 +51,5 @@ func (i *impl) ListTxnsByBlockHash(c context.Context, req *am.ListTxnsByBlockHas
 		Transactions: ret,
 	}, nil
 }
+
+var ActivitySet = wire.NewSet(NewGrpc)

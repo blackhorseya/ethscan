@@ -1,4 +1,4 @@
-package main
+package consumer
 
 import (
 	"encoding/json"
@@ -9,8 +9,11 @@ import (
 	ab "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 )
+
+var ActivitySet = wire.NewSet(NewConsumer)
 
 type impl struct {
 	logger   *zap.Logger
@@ -20,7 +23,7 @@ type impl struct {
 	done chan struct{}
 }
 
-func NewKafka(logger *zap.Logger, consumer *kafka.Consumer, biz ab.IBiz) adapters.Kafka {
+func NewConsumer(logger *zap.Logger, consumer *kafka.Consumer, biz ab.IBiz) adapters.Consumer {
 	return &impl{
 		logger:   logger,
 		biz:      biz,

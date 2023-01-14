@@ -13,10 +13,10 @@ import (
 
 type Service struct {
 	logger *zap.Logger
-	kafka  adapters.Kafka
+	kafka  adapters.Consumer
 }
 
-func NewService(logger *zap.Logger, kafka adapters.Kafka) (app.Service, error) {
+func NewService(logger *zap.Logger, kafka adapters.Consumer) (app.Service, error) {
 	svc := &Service{
 		logger: logger.With(zap.String("type", "service")),
 		kafka:  kafka,

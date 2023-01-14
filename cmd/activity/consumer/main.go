@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var path = flag.String("c", "./configs/kafka/activity/local.yaml", "set config file path")
+var path = flag.String("c", "./configs/activity/consumer/local.yaml", "set config file path")
 
 func init() {
 	flag.Parse()

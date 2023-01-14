@@ -7,20 +7,20 @@
 package main
 
 import (
-	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz"
-	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz/repo"
+	"github.com/blackhorseya/ethscan/internal/adapter/activity/grpc"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz"
+	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
 	"github.com/blackhorseya/ethscan/internal/pkg/log"
 	"github.com/blackhorseya/ethscan/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ethscan/internal/pkg/transports/grpcx"
-	"github.com/blackhorseya/ethscan/internal/pkg/transports/kafka"
 	"github.com/blackhorseya/ethscan/pkg/app"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func CreateService(path2 string, initHeight2 uint64) (app.Service, error) {
+func CreateService(path2 string, id int64) (app.Service, error) {
 	viper, err := config.NewConfig(path2)
 	if err != nil {
 		return nil, err
@@ -33,10 +33,12 @@ func CreateService(path2 string, initHeight2 uint64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	mainOptions, err := NewCronjobOptions(viper, logger)
+	serverOptions, err := grpcx.NewServerOptions(viper)
 	if err != nil {
 		return nil, err
 	}
+	server := grpcx.NewRouter(logger)
+	grpcxServer := grpcx.NewServer(serverOptions, logger, server)
 	nodeOptions, err := repo.NewNodeOptions(viper)
 	if err != nil {
 		return nil, err
@@ -49,30 +51,13 @@ func CreateService(path2 string, initHeight2 uint64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	producerOptions, err := kafka.NewProducerOptions(viper)
+	iRepo, err := repo.NewImpl(nodeOptions, db)
 	if err != nil {
 		return nil, err
 	}
-	producer, err := kafka.NewProducer(producerOptions)
-	if err != nil {
-		return nil, err
-	}
-	iRepo, err := repo.NewImpl(nodeOptions, db, producer)
-	if err != nil {
-		return nil, err
-	}
-	clientOptions, err := grpcx.NewClientOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	client := grpcx.NewClient(clientOptions)
-	serviceClient, err := biz.NewActivityClient(client)
-	if err != nil {
-		return nil, err
-	}
-	iBiz := biz.NewImpl(iRepo, serviceClient)
-	cronjob := NewCronjob(mainOptions, logger, initHeight2, iBiz)
-	appService, err := NewService(logger, cronjob)
+	iBiz := biz.NewImpl(iRepo)
+	adaptersGrpc := grpc.NewGrpc(logger, server, iBiz)
+	appService, err := NewService(logger, grpcxServer, adaptersGrpc)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +66,4 @@ func CreateService(path2 string, initHeight2 uint64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderProducer, grpcx.ProviderClient, biz.BlockSet, NewService,
-	NewCronjobOptions,
-	NewCronjob,
-)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, grpcx.ProviderServer, grpc.ActivitySet, biz.ActivitySet, NewService)

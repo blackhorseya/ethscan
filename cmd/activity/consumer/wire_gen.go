@@ -7,6 +7,7 @@
 package main
 
 import (
+	"github.com/blackhorseya/ethscan/internal/adapter/consumer"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz"
 	"github.com/blackhorseya/ethscan/internal/entity/domain/activity/biz/repo"
 	"github.com/blackhorseya/ethscan/internal/pkg/config"
@@ -36,7 +37,7 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	consumer, err := kafka.NewConsumer(consumerOptions)
+	kafkaConsumer, err := kafka.NewConsumer(consumerOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +58,8 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 		return nil, err
 	}
 	iBiz := biz.NewImpl(iRepo)
-	adaptersKafka := NewKafka(logger, consumer, iBiz)
-	service, err := NewService(logger, adaptersKafka)
+	adaptersConsumer := consumer.NewConsumer(logger, kafkaConsumer, iBiz)
+	service, err := NewService(logger, adaptersConsumer)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +68,4 @@ func CreateService(path2 string, id int64) (app.Service, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderConsumer, biz.ActivitySet, NewService,
-	NewKafka,
-)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, kafka.ProviderConsumer, consumer.ActivitySet, biz.ActivitySet, NewService)

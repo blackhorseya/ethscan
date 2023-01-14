@@ -10,8 +10,8 @@ type Grpc interface {
 	RegisterServer() error
 }
 
-// Kafka is a consumer adapters
-type Kafka interface {
+// Consumer is a consumer adapters
+type Consumer interface {
 	// Start to listen event
 	Start() error
 
