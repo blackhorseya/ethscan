@@ -7,7 +7,6 @@ import (
 	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz/repo"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
-	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/pkg/errors"
@@ -20,13 +19,13 @@ type suiteTester struct {
 	suite.Suite
 	logger   *zap.Logger
 	repo     *repo.MockIRepo
-	activity *s2s.MockServiceClient
+	activity *model.MockServiceClient
 	biz      bb.IBiz
 }
 
 func (s *suiteTester) SetupTest() {
 	s.logger, _ = zap.NewDevelopment()
-	s.activity = new(s2s.MockServiceClient)
+	s.activity = new(model.MockServiceClient)
 	s.repo = new(repo.MockIRepo)
 	s.biz = CreateBiz(s.repo, s.activity)
 }

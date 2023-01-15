@@ -87,7 +87,10 @@ gen-pb: ## generate protobuf messages and services
 	@go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 
 	## Starting generate pb
-	@protoc --proto_path=./pb --go_out=paths=source_relative:./pkg/entity --go-grpc_out=paths=source_relative,require_unimplemented_servers=false:./pb ./pb/domain/*/*/*.proto
+	@protoc --proto_path=. \
+			--go_out=./pkg/entity --go_opt=paths=import \
+			--go-grpc_out=./pkg/entity --go-grpc_opt=paths=import,require_unimplemented_servers=false \
+			./pb/domain/*/**.proto
 	@echo Successfully generated proto
 
 	## Starting inject tags
@@ -96,9 +99,9 @@ gen-pb: ## generate protobuf messages and services
 
 .PHONY: gen-mocks
 gen-mocks: ## generate mocks code via mockery
-	@go generate -tags=wireinject -x ./...
+	@go generate -tags=wireinject ./...
 
-	@mockery --dir ./pkg/entity/domain/activity/s2s --all --inpackage
+	@mockery --dir ./pkg/entity/domain/activity/model --all --inpackage
 
 .PHONY: update-package
 update-package: ## update package and commit

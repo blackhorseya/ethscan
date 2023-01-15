@@ -5,13 +5,13 @@ package biz
 
 import (
 	"github.com/blackhorseya/ethscan/internal/entity/domain/block/biz/repo"
-	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
+	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	"github.com/google/wire"
 )
 
 var testProviderSet = wire.NewSet(NewImpl)
 
-func CreateBiz(repo repo.IRepo, activity s2s.ServiceClient) bb.IBiz {
+func CreateBiz(repo repo.IRepo, activity am.ServiceClient) bb.IBiz {
 	panic(wire.Build(testProviderSet))
 }

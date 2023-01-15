@@ -8,7 +8,6 @@ import (
 	"github.com/blackhorseya/ethscan/internal/pkg/errorx"
 	"github.com/blackhorseya/ethscan/pkg/contextx"
 	am "github.com/blackhorseya/ethscan/pkg/entity/domain/activity/model"
-	"github.com/blackhorseya/ethscan/pkg/entity/domain/activity/s2s"
 	bb "github.com/blackhorseya/ethscan/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ethscan/pkg/entity/domain/block/model"
 	"github.com/google/wire"
@@ -19,10 +18,10 @@ var BlockSet = wire.NewSet(repo.ProviderSet, NewImpl, NewActivityClient)
 
 type impl struct {
 	repo     repo.IRepo
-	activity s2s.ServiceClient
+	activity am.ServiceClient
 }
 
-func NewImpl(repo repo.IRepo, activity s2s.ServiceClient) bb.IBiz {
+func NewImpl(repo repo.IRepo, activity am.ServiceClient) bb.IBiz {
 	return &impl{
 		repo:     repo,
 		activity: activity,
