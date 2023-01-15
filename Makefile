@@ -122,7 +122,7 @@ migrate-down: check-SVC_NAME check-N ## run migration down
 deploy: check-SVC_NAME check-SVC_ADAPTER check-DEPLOY_TO ## deploy the application via helm 3
 	@helm -n $(NS) upgrade --install $(DEPLOY_TO)-$(APP_NAME) \
 	$(HELM_REPO_NAME)/$(PROJECT_NAME) --history-max 3 \
-	-f ./deployments/values/$(SVC_ADAPTER)/$(SVC_NAME)/$(DEPLOY_TO).yaml
+	-f ./deployments/values/$(SVC_NAME)/$(SVC_ADAPTER)/$(DEPLOY_TO).yaml
 
 ifeq ($(VERSION), latest)
 	@echo "Restart deployment/$(DEPLOY_TO)-$(APP_NAME)"
