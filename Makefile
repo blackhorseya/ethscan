@@ -110,6 +110,10 @@ update-package: ## update package and commit
 	@git add go.mod go.sum
 	@git commit -m "build: update package"
 
+.PHONY: update-repos
+update-repos: ## run gazelle with bazel
+	@bazel run //:gazelle-update-repos
+
 .PHONY: migrate-up
 migrate-up: check-SVC_NAME ## run migration up
 	@migrate -database $(DB_URI) -path $(shell pwd)/scripts/migrations/$(SVC_NAME) up
