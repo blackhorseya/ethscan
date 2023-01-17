@@ -88,8 +88,8 @@ gen-pb: ## generate protobuf messages and services
 
 	## Starting generate pb
 	@protoc --proto_path=. \
-			--go_out=./pkg/entity --go_opt=paths=import \
-			--go-grpc_out=./pkg/entity --go-grpc_opt=paths=import,require_unimplemented_servers=false \
+			--go_out=. --go_opt=module=github.com/blackhorseya/ethscan \
+			--go-grpc_out=. --go-grpc_opt=module=github.com/blackhorseya/ethscan,require_unimplemented_servers=false \
 			./pb/domain/*/**.proto
 	@echo Successfully generated proto
 
